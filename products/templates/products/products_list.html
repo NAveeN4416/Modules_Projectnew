@@ -1,0 +1,25 @@
+
+{% extends 'includes/base.html' %}
+
+{% block content %}
+<div class="row">
+  <div class="col-sm-12">
+      <div class="card">
+        <div class="card-header">
+        	<h5 class="card-header-text"> {{ data.title }}</h5>
+        	<span>
+            <a href="{% url 'products:categories_list' %}">
+              <button class="btn btn-success" style="margin-left: 60%"> Categories</button>
+            </a>
+            <a href="{% url 'products:add_product' %}">
+              <button class="btn btn-success fa fa-plus" style="margin-left: 1%"> Add Product</button>
+            </a>
+        	</span>
+        </div>
+          <div class="card-block">
+			<h1 class="text-center">Products</h1>
+        </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

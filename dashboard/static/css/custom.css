@@ -1,0 +1,204 @@
+@charset "utf-8";
+/* CSS Document */
+
+/*=====================================COLOR-BOXES-CSS==========================*/
+@import 'https://fonts.googleapis.com/css?family=Roboto:500,500i,700,700i,900';
+body {
+    font-size: 14px;
+    overflow-x: hidden;
+    background-color: #E5E5E5;
+    font-family: 'Open Sans', sans-serif !important;
+}
+
+
+.activity-block {
+    background: white;
+    width: 100%;
+    display: block;
+    float: left;
+    margin: 15px auto 15px auto;
+  padding: 10px 13px;
+    height: 150px;
+    border-radius: 4px;
+    position: relative;
+    color: #fff !important;
+}
+
+
+.activity-block.success {
+    background: #2dc1c9;
+    background: -moz-linear-gradient(left, #2dc1c9 0%, #2194c1 30%, #252d47 100%);
+    background: -webkit-linear-gradient(left, #2dc1c9 0%, #2194c1 30%, #252d47 100%);
+    /* background: linear-gradient(to right, #2dc1c9 0%, #2194c1 30%, #252d47 100%); */
+    color: #fff;
+}
+.activity-block.danger {
+    background: #e47c64;
+    background: -moz-linear-gradient(left, #e47c64 0%, #e36481 30%, #252d47 100%);
+    background: -webkit-linear-gradient(left, #e47c64 0%, #e36481 30%, #252d47 100%);
+    background: linear-gradient(to right, #e47c64 0%, #e36481 30%, #252d47 100%);
+    color: #fff;
+}
+.activity-block.warning {
+    background: #ffba00;
+    background: -moz-linear-gradient(left, #ffba00 0%, #fc9244 30%, #252d47 100%);
+    background: -webkit-linear-gradient(left, #ffba00 0%, #fc9244 30%, #252d47 100%);
+    background: linear-gradient(to right, #ffba00 0%, #fc9244 30%, #252d47 100%);
+    color: #fff;
+}
+.activity-block.primary {
+    background: #7a79fe;
+    background: -moz-linear-gradient(left, #7a79fe 0%, #a758f5 30%, #252d47 100%);
+    background: -webkit-linear-gradient(left, #7a79fe 0%, #a758f5 30%, #252d47 100%);
+    background: linear-gradient(to right, #7a79fe 0%, #a758f5 30%, #252d47 100%);
+    color: gray;
+}
+.activity-block.info {
+      background: #5bc0de;
+    background: -moz-linear-gradient(to right, rgba(76, 175, 80, 0.69) 0%, #4CAF50 30%, #214e23 100%);
+    background: -webkit-linear-gradient(to right, rgba(76, 175, 80, 0.69) 0%, #4CAF50 30%, #214e23 100%);
+    background: linear-gradient(to right, rgba(76, 175, 80, 0.69) 0%, #4CAF50 30%, #214e23 100%);
+    color: #fff;
+}
+.activity-block.default {
+      background: #959801 ;
+    background: -moz-linear-gradient(to right, rgba(154, 156, 62, 0.76) 0%, #959801 30%, #5d5f19 100%);
+    background: -webkit-linear-gradient(to right, rgba(154, 156, 62, 0.76) 0%, #959801 30%, #5d5f19 100%);
+    background: linear-gradient(to right, rgba(154, 156, 62, 0.76) 0%, #959801 30%, #5d5f19 100%);
+    color: #fff;
+}
+.activity-block.custom {
+    background: #00c0ef   ;
+    background: -moz-linear-gradient(to right, rgba(0, 192, 239, 0.43) 0%, rgba(0, 192, 239, 0.95) 30%, #1b4b56 100%);
+    background: -webkit-linear-gradient(to right, rgba(0, 192, 239, 0.43) 0%, rgba(0, 192, 239, 0.95) 30%, #1b4b56 100%);
+    background: linear-gradient(to right, rgba(0, 192, 239, 0.43) 0%, rgba(0, 192, 239, 0.95) 30%, #1b4b56 100%);
+    color: #fff;
+}
+.activity-block.secondary {
+    background: #3b5998;
+    background: -moz-linear-gradient(to right, rgba(59, 89, 152, 0.78) 0%, #3b5998 30%, #102758 100%);
+    background: -webkit-linear-gradient(to right, rgba(59, 89, 152, 0.78) 0%, #3b5998 30%, #102758 100%);
+    background: linear-gradient(to right, rgba(59, 89, 152, 0.78) 0%, #3b5998 30%, #102758 100%);
+    color: gray;
+}
+
+.activity-block.success * {
+    color: #ffffff !important;
+}
+.activity-block h5 {
+  font-weight: 500;
+    font-size: 25px;
+}
+.activity-block.success * {
+    color: #ffffff !important;
+}
+.activity-block p {
+    color: #fff;
+    margin-bottom: 0;
+    text-transform: capitalize;
+    font-size: 16px;
+    letter-spacing: 0.5px;
+
+}
+.activity-block.success * {
+    color: #ffffff !important;
+}
+.activity-block i {
+    font-size: 24px;
+    margin-top: 10px;
+}
+.activity-block .progress-heading {
+        font-size: 15px;
+    color: #fff;
+    font-weight: 400;
+    position: relative;
+
+    left: 5px;
+    top: 4px;
+}
+
+.activity-block .bg-icon {
+    font-size: 100px;
+    height: 100px;
+    width: 100%;
+    position: absolute;
+    z-index: 0;
+    top: 10px;
+    left: 0;
+    opacity: 0.1;
+    padding: 0 15px;
+}
+.activity-block i {
+    font-size: 35px;
+    margin-top: 5px;
+}
+.text-center {
+    text-align: center !important;
+}
+.activity-block .media {
+    display: flex;
+    align-items: flex-start;
+}
+.row.border-contnet {
+    background: transparent;
+    position: relative;
+    top: 16px;
+    margin-left: -13px;
+    margin-right: -13px;
+    border-top: 1px solid #f7efef;
+    font-size: 16px;
+}
+p.total-amount {
+    position: relative;
+    right: 7px;
+    top: 5px;
+    font-weight: 400;
+}
+.main-box{
+    padding-right: 0px;
+}
+.box-four{
+ padding-right: 15px !important;   
+}
+.box-eight{
+  padding-right: 15px !important;     
+}
+/*------------------END--------------------*/
+
+table.table-bordered.dataTable tbody th,
+ table.table-bordered.dataTable tbody td {
+    border-bottom-width: 0;
+    font-size: 13px;
+}
+ table.table-bordered.dataTable tbody td i{
+	 margin-right:5px;
+	 font-size:14px;
+}
+button.dt-button, div.dt-button, a.dt-button {
+position: relative;
+    display: inline-block;
+    box-sizing: border-box;
+    margin-right: 0.333em;
+    padding: 5px 20px;
+    border: 1px solid #ff3466;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.88em;
+    color: #fff;
+    white-space: nowrap;
+    overflow: hidden;
+    background-color: #ff3466;
+    background-image: -webkit-linear-gradient(top, #ff3466 0%, #ff3466 100%);
+}
+button.dt-button:hover, div.dt-button:hover, a.dt-button:hover {
+	background: #fff !important;
+	color: #ff3466;
+	border: 1px solid #ff3466 !important;
+}
+.page-item.active .page-link, .page-item.active .page-link:focus, .page-item.active .page-link:hover {
+	background-color: #ff3466;
+		border: 1px solid #ff3466 !important;
+}
+.page-link:focus, .page-link:hover {
+    color: #ff3466;
+}

@@ -1,0 +1,423 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>:: Django Modules Project  ::</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no">
+    <!-- Favicon icon -->
+    <link rel="shortcut icon" href="{% static 'images/dj.jpg' %}" tppabs="http://ableproadmin.com/light/vertical/assets/images/favicon.png" type="image/x-icon">
+    <!-- <link rel="icon" href="assets/images/favicon.ico" tppabs="http://ableproadmin.com/light/vertical/assets/images/favicon.ico" type="image/x-icon"> -->
+
+    <link href="http://volivesolutions.com/fonts.googleapis.com/css-family=Open+Sans-300,400,600,700,800.css" rel="stylesheet">
+    <!-- iconfont -->
+    <link rel="stylesheet" type="text/css" href="{% static 'icon/icofont/css/icofont.css' %}" >
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <!-- simple line icon -->
+    <link rel="stylesheet" type="text/css" href="{% static 'icon/simple-line-icons/css/simple-line-icons.css' %}" >
+    <!-- Required Fremwork -->
+    <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.min.css' %}" >
+    
+  <!-- Chartlist chart css -->
+    <link rel="stylesheet" href="{% static 'plugins/charts/chartlist/css/chartlist.css' %}"  type="text/css" media="all">
+    
+    <!-- Echart js -->
+    <script src="{% static 'plugins/charts/echarts/js/echarts-all.js' %}"></script>
+    
+     <!-- Data Table Css -->
+  <link rel="stylesheet" type="text/css" href="{% static 'plugins/data-table/css/dataTables.bootstrap4.min.css' %}" >
+  <link rel="stylesheet" type="text/css" href="{% static 'plugins/data-table/css/buttons.dataTables.min.css' %}" >
+  <link rel="stylesheet" type="text/css" href="{% static 'plugins/data-table/css/responsive.bootstrap4.min.css' %}" >
+    <!-- Style.css -->
+    <link rel="stylesheet" type="text/css" href="{% static 'css/main.css' %}" >
+     <link rel="stylesheet" type="text/css" href="{% static 'css/custom.css' %}">
+    <!-- Responsive.css-->
+    <link rel="stylesheet" type="text/css" href="{% static 'css/responsive.css' %}">
+    <link rel="stylesheet" href="{% static 'css/bootstrap-datetimepicker.css' %}"/>
+    <link rel="stylesheet" href="{% static 'css/animate.css' %}"/>
+    <link rel="stylesheet" href="{% static 'css/alertify.css' %}"/>
+    <script src="https://cdn.ckeditor.com/4.6.2/standard/ckeditor.js"></script>
+    <!--color css-->
+    <style type="text/css">
+        
+        .sidebar-menu>li>a .inactive-arrow {
+    float: right;
+    position: relative;
+    top: 5px;
+}
+.active-arrow{
+display: none !important;
+    float: right;
+    position: relative;
+    top: 5px;
+
+}
+li.dropdown.active .active-arrow  {
+    display: block !important;
+
+    transition: all ease-in-out .5s;
+      -webkit-transition: display 2s; 
+    transition: display 2s;
+}
+li.dropdown.active .inactive-arrow{
+    display: none !important;
+}
+    
+
+.main-header-top .logo 
+{
+    background-color: white;
+}
+
+</style>
+</head>
+
+<body class="sidebar-mini fixed">
+    <div class="wrapper">
+        <header class="main-header-top hidden-print">
+            <a href="{% url 'dashboard:index' %}"  class="logo">
+            <img src="{% static 'images/django-dark.png' %}"  style="height:85%;">
+            </a>
+            <nav class="navbar navbar-static-top">
+                <!-- Sidebar toggle button--><a href="javascript:" data-toggle="offcanvas" class="sidebar-toggle"></a>
+                <!-- Navbar Right Menu-->
+                <div class="navbar-custom-menu">
+                    <ul class="top-nav">
+                       
+                        <!-- chat dropdown -->
+                       
+                        <!-- window screen -->
+                        <li class="pc-rheader-submenu">
+                            <a href="#" class="drop icon-circle" onclick="javascript:toggleFullScreen()">
+                                <i class="icon-size-fullscreen"></i>
+                            </a>
+                        </li>
+                        <!-- User Menu-->
+                        <li class="dropdown">
+                            <a href="#!" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" class="dropdown-toggle drop icon-circle drop-image">
+                                <span><img class="img-circle " src="{% static 'images/avatar-1.png' %}" style="width:40px;" alt="User Image"></span>
+                                <span>{{ user.username }}<i class=" icofont icofont-simple-down"></i></span>
+                            </a>
+                            <ul class="dropdown-menu settings-menu">
+                                <!--<li><a href="javascript:void(0)"><i class="icon-settings"></i> Settings</a></li>-->
+                                <li><a href="#"><i class="icon-user"></i> Profile</a></li>
+                                <li class="p-0">
+                                    <div class="dropdown-divider m-0"></div>
+                                </li>
+                                
+                                <li><a href="{% url 'users:logout' %}"><i class="icon-logout"></i> Logout</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+              
+                </div>
+            </nav>
+        </header>
+        <aside class="main-sidebar hidden-print " >
+            <section class="sidebar" id="sidebar-scroll">
+                <div class="user-panel">
+                    <div class="f-left image"><img src="{% static 'images/avatar-1.png' %}" alt="User Image" class="img-circle"></div>
+                    <div class="f-left info">
+                        <p>{{ user.username }}</p>
+                        <p class="designation">{{ user.email }}</p>
+                    </div>
+                </div>
+                <!-- sidebar profile Menu-->
+                <!-- Sidebar Menu-->
+                <ul class="sidebar-menu">
+                    <li class=" {% if data.page_name == 'dashboard' %}  active {% endif %}">
+                        <a class="waves-effect waves-dark" href="{% url 'dashboard:index' %}" >
+                        <i class="fa fa-tachometer"></i><span> Dashboard</span></a>
+                    </li>
+                    <li class="{% if data.page_name == 'products' %}  active {% endif %}">
+                        <a class="waves-effect waves-dark" href="{% url 'products:products_list' %}" >
+                        <i class="fa fa-tachometer"></i><span> Products</span></a>
+                    </li>
+                    <li class="{% if data.page_name == 'users' %}  active {% endif %}">
+                        <a class="waves-effect waves-dark" href="#" >
+                        <i class="fa fa-users"></i><span>Users</span></a>
+                    </li>
+                    <li class="{% if data.page_name == 'sp' %}  active {% endif %}">
+                        <a href="javascript:"><i class="fa fa-users"></i><span>Service Providers</span><i class="icon-arrow-down"></i></a>
+                        <ul class="treeview-menu"> 
+                            <li class="<?php echo (@$subpage_name=='active')?'active':'';?>">
+                                <a class="waves-effect waves-dark" href="#" >
+                            <i class="fa fa-toggle-on"></i><span>Approved</span></a>
+                            </li>
+                            <li class="<?php echo (@$subpage_name=='inactive')?'active':'';?>">
+                                <a class="waves-effect waves-dark" href="#" >
+                            <i class="fa fa-toggle-off"></i><span>Waiting for Approval</span></a>
+                            </li>
+                            <li class="<?php echo (@$subpage_name=='banned_sp')?'active':'';?>">
+                                <a class="waves-effect waves-dark" href="#" >
+                            <i class="fa fa-ban"></i><span>Rejected</span></a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="{% if data.page_name == 'terms' %}  active {% endif %}">
+                        <a class="waves-effect waves-dark" href="{% url 'dashboard:terms' %}" >
+                        <i class="fa fa-server"></i><span>Terms & Conditions </span></a>
+                    </li>
+                </ul>
+            </section>
+        </aside>
+
+        <div class="content-wrapper">
+            <!-- Container-fluid starts -->
+             <div class="container-fluid">
+                <!-- Row Starts -->
+                <div class="row">
+                  <div class="col-sm-12">
+                    <div class="main-header">
+                      <h4>{{ data.title }}</h4>
+                      <ol class="breadcrumb breadcrumb-title breadcrumb-arrow">
+                        <li class="breadcrumb-item">
+                          <a href="#">
+                            <i class="icofont icofont-home"> Home</i>
+                          </a>
+                        </li>
+                        <li class="breadcrumb-item"><a href="#:" > {{ data.title }}</a></li>
+                      </ol>
+                      {% if messages %}
+                        <div class="card bg-light">
+                            <main role="main" class="container bor">
+                              <div class="row">
+                                <div class="col-md-8" style="margin-left: 210px">
+                                    {% for message in messages %}
+                                      <div class="alert alert-{{ message.tags }} text-center alert-dismissible fade show">
+                                        {{ message }}
+                                      </div>
+                                    {% endfor %}
+                                </div>
+                              </div>
+                            </main>
+                        </div>
+                     {% endif %}
+                    </div>
+                  </div>
+                </div>
+                
+                {% block content %}{% endblock %}
+
+            </div>
+        </div>        
+   <!-- CONTENT-END-->
+    </div>
+
+{% block script %}
+
+{% endblock script %}
+
+<!-- FOOTER-START-->
+
+<!-- FOOTER-END-->
+
+<!-- Warning Section Ends -->
+<!-- footer -->
+
+<!-- Required Jqurey -->
+<script src="{% static 'js/jquery-3.1.1.min.js' %}"></script>
+<script src="{% static 'js/jquery-ui.min.js' %}" ></script>
+<script src="{% static 'js/tether.min.js' %}" ></script>
+<script type="text/javascript" src="{% static 'js/html2canvas.min.js' %}"></script>
+
+<script type="text/javascript" src="{% static 'js/bootstrap-notify.min.js' %}"></script>
+
+ <script src="{% static 'js/jquery.validate.js' %}" type="text/javascript"></script>
+<!-- Required Fremwork -->
+<script src="{% static 'js/bootstrap.min.js' %}" ></script>
+
+<!-- waves effects.js -->
+<script src="{% static 'plugins/waves/js/waves.min.js' %}" ></script>
+
+<!-- Scrollbar JS-->
+<script src="{% static 'plugins/slimscroll/js/jquery.slimscroll.js' %}"></script>
+<script src="{% static 'plugins/slimscroll/js/jquery.nicescroll.min.js' %}" ></script>
+
+<!--classic JS-->
+<script src="{% static 'plugins/search/js/classie.js' %}" ></script>
+
+
+<!-- data-table js -->
+<script src="{% static 'plugins/data-table/js/jquery.dataTables.min.js' %}" ></script>
+<script src="{% static 'plugins/data-table/js/dataTables.buttons.min.js' %}"></script>
+<script src="{% static 'plugins/data-table/js/jszip.min.js' %}" ></script>
+<script src="{% static 'plugins/data-table/js/pdfmake.min.js' %}"></script>
+<script src="{% static 'plugins/data-table/js/vfs_fonts.js' %}" ></script>
+<script src="{% static 'plugins/data-table/js/buttons.print.min.js' %}" ></script>
+<script src="{% static 'plugins/data-table/js/buttons.html5.min.js' %}" ></script>
+<script src="{% static 'plugins/data-table/js/dataTables.bootstrap4.min.js' %}" ></script>
+<script src="{% static 'plugins/data-table/js/dataTables.responsive.min.js' %}" ></script>
+<script src="{% static 'plugins/data-table/js/responsive.bootstrap4.min.js' %}" ></script>
+
+<!-- Sparkline charts -->
+<script src="{% static 'plugins/charts/sparkline/js/jquery.sparkline.js' %}" ></script>
+
+<!-- Counter js  -->
+<script src="{% static 'plugins/countdown/js/waypoints.min.js' %}" ></script>
+<script src="{% static 'plugins/countdown/js/jquery.counterup.js' %}" ></script>
+
+<!-- custom js -->
+<script type="text/javascript" src="{% static 'js/main.js' %}" ></script>
+<!-- <script type="text/javascript" src="<?php echo base_url();?>assets/admin/pages/dashboard.js" ></script> -->
+<script src="{% static 'pages/data-table.js' %}" ></script>
+<!-- <script type="text/javascript" src="<?php echo base_url();?>assets/admin/pages/elements.js" ></script> -->
+<script src="{% static 'js/menu.js' %}" ></script>
+<script src="{% static 'js/highcharts.js' %}" ></script>
+<script src="{% static 'js/exporting.js' %}" ></script>
+<!--<script src="<?php echo base_url();?>assets/admin/js/ckeditor.js" ></script>-->
+<script src="{% static 'js/moment.min.js' %}"></script>
+
+<script src="{% static 'js/bootstrap-datetimepicker.min.js' %}"></script>
+<script src="{% static 'js/bootstrap-datepicker.min.js' %}"></script>
+<script src="{% static 'js/alertify.min.js' %}"></script>
+
+<!-- Sweet alerts js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.0/sweetalert.min.js" > </script>
+<script src="sha256-FSEeC+c0OJh+0FI23EzpCWL3xGRSQnNkRGV2UF5maXs=" > </script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.0/sweetalert.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.0/sweetalert.min.js" integrity="sha256-FSEeC+c0OJh+0FI23EzpCWL3xGRSQnNkRGV2UF5maXs=" crossorigin="anonymous"></script>
+
+
+</body>
+</html>
+<!-- success alert -->
+<!-- <?php if($this->session->flashdata('success')) { ?>
+<script type="text/javascript">
+$.notify({
+    icon: '<?php echo base_url()?>assets/images/check.gif',
+    title: ' Success',
+    message: '<?php echo $this->session->flashdata('success')?>'
+},{
+    type: "pastel-info",
+    allow_dismiss: true,
+    newest_on_top: true,
+    showProgressbar: false,
+    placement: {
+        from: "bottom",
+        align: "right"
+    },
+    offset: 20,
+    spacing: 10,
+    z_index: 5000,
+    delay: 5000,
+    timer: 1000,
+    url_target: '_blank',
+    mouse_over: null,
+    animate: {
+        enter: 'animated bounceInDown',
+        exit: 'animated zoomOutUp'
+    },
+    onShow: null,
+    onShown: null,
+    onClose: null,
+    onClosed: null,
+    icon_type: 'image',
+    template: '<div data-notify="container" class="col-xs-11 col-sm-3 alert alert-{0}" role="alert">' +
+        '<button type="button" aria-hidden="true" class="close" data-notify="dismiss">×</button>' +
+        '<img data-notify="icon">' +
+        '<span data-notify="title">{1}</span> ' +
+        '<span data-notify="message"><p>{2}</p></span>' +
+        '<div class="progress" data-notify="progressbar">' +
+            '<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
+        '</div>' +
+        '<a href="{3}" target="{4}" data-notify="url"></a>' +
+    '</div>' 
+});
+
+</script> -->
+<!-- <?php } ?>
+error alert
+<?php if($this->session->flashdata('error')) { ?>
+<script type="text/javascript">
+$.notify({
+    icon: '<?php echo base_url()?>assets/images/cross.gif',
+    title: ' Alert',
+    message: "<?php echo $this->session->flashdata('error')?>"
+},{
+    type: "pastel-danger",
+    allow_dismiss: true,
+    newest_on_top: true,
+    showProgressbar: false,
+    placement: {
+        from: "bottom",
+        align: "right"
+    },
+    offset: 20,
+    spacing: 10,
+    z_index: 5000,
+    delay: 5000,
+    timer: 1000,
+    url_target: '_blank',
+    mouse_over: null,
+    animate: {
+        enter: 'animated bounceInDown',
+        exit: 'animated zoomOutUp'
+    },
+    onShow: null,
+    onShown: null,
+    onClose: null,
+    onClosed: null,
+    icon_type: 'image',
+    template: '<div data-notify="container" class="col-xs-11 col-sm-3 alert alert-{0}" role="alert">' +
+        '<button type="button" aria-hidden="true" class="close" data-notify="dismiss">×</button>' +
+        '<img data-notify="icon" class="image-cross">' +
+        '<span data-notify="title">{1}</span> ' +
+        '<span data-notify="message"><p>{2}</p></span>' +
+        '<div class="progress" data-notify="progressbar">' +
+            '<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
+        '</div>' +
+        '<a href="{3}" target="{4}" data-notify="url"></a>' +
+    '</div>' 
+});
+
+</script>
+<?php } ?>
+error alert
+<style>
+[data-notify="container"][class*="alert-pastel-"] {
+           /*background-color: rgb(255, 255, 238);*/
+            background:linear-gradient(65deg, #378482 0%, #378482 100%);
+            border-width: 0px;
+            border-left: 15px solid rgb(255, 240, 106);
+            border-radius: 0px;
+            box-shadow: 0px 0px 5px rgba(51, 51, 51, 0.3);
+            font-family: 'Old Standard TT', serif;
+            letter-spacing: 1px;
+        }
+        [data-notify="container"].alert-pastel-info {
+            border-left-color: #68bfbd;
+        }
+        [data-notify="container"].alert-pastel-danger {
+            border-left-color: #68bfbd;
+        }
+        [data-notify="container"][class*="alert-pastel-"] > [data-notify="title"] {
+            color: #FFFFFF;
+            font-weight: bold;
+            font-size: 200%;
+        }
+        [data-notify="container"][class*="alert-pastel-"] > [data-notify="message"] {
+            font-weight: 400;
+        }
+        [data-notify="message"] p{
+            border: 2px solid #FFFFFF;
+            padding : 2%;
+            animation: blinker 1s linear infinite;
+            font-size: 130%;
+            color:#FFFFFF;
+        }
+        @keyframes blinker {  
+            50% { border: 2px solid #fff; }
+            100% { border: 2px solid #fff; }
+        }
+        [data-notify="icon"] {
+            height: 80px;
+            color:#FFFFFF;
+        }
+        .image-cross {
+            height: 30px !important;
+        }
+</style>
+ -->

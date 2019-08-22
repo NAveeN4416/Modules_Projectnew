@@ -1,0 +1,12 @@
+
+	<h2>Email Verification for DJANGO Account</h2>
+
+	{% if path is 'activate_account'  %}
+
+	<p><a href="http://{{ domain }}{% url path uidb64=uid token=token  %}">Click here </a>To Activate DJANGO Account</p>,
+
+	{% else %}
+
+	<p><a href="http://{{ domain }}{% url path uidb64=uid token=token  %}">Click here </a>To Reset DJANGO Account Password</p>,
+
+	{% endif %}

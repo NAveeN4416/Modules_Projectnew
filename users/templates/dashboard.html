@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+
+<h2 class="text-center">Welcome Mr.{{ request.user.username }}</h2>
+<a href="{% url 'users:users_list' %}" class="text-right"><b>Users List</b></a>
+<a href="{% url 'users:logout' %}" class="text-right">Logout</a>
+
+<br><br>
+
+<h4><u>API's</u></h4>
+<a href="{% url 'apis:user-list' %}" target="_blank">Get Userslist</a>
+<a href="{% url 'apis:user-detail' pk=1 %}" target="_blank">Admin details</a>
+<a href="{% url 'apis:user-useractivity' pk=2 %}" target="_blank">Change User Status</a>
+
+{% endblock content %}

@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+
+<h3>Django Users List</h3>
+<a href="{% url 'users:dashboard' %}" class="text-right"><< back</a>
+<div class="row">
+
+{% for user in users %}
+  <div class="col-sm-4">
+	<div class="card" style="width: 20rem;">
+	  <div class="card-body">
+	    <h5 class="card-title">{{ user.username }}</h5>
+	    <p class="card-text">{{ user.email }}</p>
+	    <p class="card-text">Last login : {{ user.last_login }}</p>
+	    <a href="http://localhost:8000/apis/users/{{user.id}}" target="_blank">View Details</a>
+	  </div>
+	</div>
+	<hr>
+  </div>
+{% endfor %}
+</div>
+
+
+{% endblock content %}

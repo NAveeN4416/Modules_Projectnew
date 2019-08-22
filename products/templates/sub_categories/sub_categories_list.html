@@ -1,0 +1,54 @@
+
+{% extends 'includes/base.html' %}
+
+{% block content %}
+  <div class="row">
+    <div class="col-sm-12">
+      <div class="card">
+        <div class="card-header">
+          <h5 class="card-header-text"> {{ data.title }}</h5>
+          <span>
+            <a href="{% url 'products:add_subcategory' %}">
+              <button class="btn btn-success fa fa-plus" style="margin-left: 59%"> SubCategory</button>
+            </a>
+          </span>
+        </div>
+        <div class="card-block">
+          <table id="advanced-table" class="table dt-responsive table-striped table-bordered nowrap">
+            <thead>
+              <tr>
+                <th>S NO</th>
+                <th>Category</th>
+                <th>Image</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tfoot>
+              <tr>
+                <th>S NO</th>
+                <th>Category</th>
+                <th>Image</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </tfoot>
+
+            <tbody>
+              {% for subcategory in data.subcategories %}
+                <tr>
+                    <td>{{ subcategory.id }}</td>
+                    <td><span style="font-size: 20px">{{ subcategory.sub_category }}</span></td>
+                    <td><img src="{{ subcategory.image.url }}" height="50"></td>
+                    <td>{{ subcategory.status }}</td>
+                    <td><button>Delete</button></td>
+                </tr>
+              {% endfor %}
+            </tbody>
+
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

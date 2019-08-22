@@ -1,0 +1,57 @@
+
+{% extends 'includes/base.html' %}
+
+{% block content %}
+  <div class="row">
+    <div class="col-sm-12">
+      <div class="card">
+        <div class="card-header">
+        	<h5 class="card-header-text"> {{ data.title }}</h5>
+        	<span>
+            <a href="{% url 'products:subcategories_list' %}">
+              <button class="btn btn-success" style="margin-left: 59%"> SubCategories</button>
+            </a>
+            <a href="{% url 'products:add_category' %}">
+              <button class="btn btn-success fa fa-plus" style="margin-left: 1%"> Category</button>
+            </a>
+        	</span>
+        </div>
+        <div class="card-block">
+			    <table id="advanced-table" class="table dt-responsive table-striped table-bordered nowrap">
+            <thead>
+              <tr>
+                <th>S NO</th>
+                <th>Category</th>
+                <th>Image</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tfoot>
+              <tr>
+                <th>S NO</th>
+                <th>Category</th>
+                <th>Image</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </tfoot>
+
+            <tbody>
+              {% for category in data.categories %}
+                <tr>
+                    <td>{{ category.id }}</td>
+                    <td><span style="font-size: 20px">{{ category.category_name }}</span></td>
+                    <td><img src="{{ category.image.url }}" height="50"></td>
+                    <td>{{ category.status }}</td>
+                    <td><button>Delete</button></td>
+                </tr>
+              {% endfor %}
+            </tbody>
+
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
