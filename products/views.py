@@ -1,3 +1,4 @@
+import os
 from django.utils import timezone
 from django.shortcuts import render,redirect
 from django.http import HttpRequest, HttpResponse ,JsonResponse
@@ -72,9 +73,16 @@ def Add_Category(request,ref_id=0):
 
 	if request.method == 'POST' :
 		data  = request.POST.copy()
+
+		image = request.FILES['image']
+
+		if image:
+			old_image = category.image
+			category.image = image
+
 		category.category_name = data['category_name']
 		category.status 	   = data['status']
-		category.image 		   = request.FILES['image']
+
 		category.save()
 
 		return redirect('products:categories_list')
@@ -86,6 +94,15 @@ def Add_Category(request,ref_id=0):
 	context['category']  = category
 	return render(request,'categories/add_category.html',{'data':context})
 
+@cache_control(no_cache=True, must_revalidate=True, no_store=True)
+@Set_RequestObject
+@Check_Login
+@Check_SuperUser
+def Delete_Category(request,ref_id=0):
+	category = table_obj('categories',ref_id)
+	category.delete()
+
+	return redirect('products:categories_list')
 
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)

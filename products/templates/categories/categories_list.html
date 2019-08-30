@@ -1,5 +1,6 @@
-
 {% extends 'includes/base.html' %}
+{% load tags %}
+
 
 {% block content %}
   <div class="row">
@@ -41,10 +42,13 @@
               {% for category in data.categories %}
                 <tr>
                     <td>{{ category.id }}</td>
-                    <td><span style="font-size: 20px">{{ category.category_name }}</span></td>
+                    <td><span style="font-size: 15px">{{ category.category_name }}</span></td>
                     <td><img src="{{ category.image.url }}" height="50"></td>
-                    <td>{{ category.status }}</td>
-                    <td><button>Delete</button></td>
+                    <td><span class="badge badge-success">{{ category.status|status }}</span></td>
+                    <td>
+                      <a href="{% url 'products:delete_category' category.id %}"><button class="btn btn-sm btn-danger"><i class="fa fa-trash" aria-hidden="true"></i>Delete</button></a>
+                      <a href="{% url 'products:add_category' category.id %}"><button class="btn btn-sm btn-warning"><i class="fa fa-edit" aria-hidden="true"></i>Edit</button></a>
+                    </td>
                 </tr>
               {% endfor %}
             </tbody>

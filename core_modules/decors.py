@@ -5,7 +5,7 @@ from django.shortcuts import render,redirect
 #Making request obj as GLOBAL ==> decorator
 def Set_RequestObject(func):
 
-	def set_obj(request,ref_id=0):
+	def set_obj(request,*args,**kwargs):
 		settings.REQUEST_OBJECT = request
 
 	def run_view(*args,**kwargs):

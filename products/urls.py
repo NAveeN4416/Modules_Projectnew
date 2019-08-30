@@ -8,6 +8,7 @@ app_name = "products"
 urlpatterns = [
 				#Categories
 				url(r'^categories_list/', views.Categories_List, name="categories_list"),
+				url(r'^delete_category/(?P<ref_id>\d+)$', views.Delete_Category, name="delete_category"),
 				url(r'^add_category/(?P<ref_id>\d+)$', views.Add_Category, name="add_category"),
 				url(r'^add_category/', views.Add_Category, name="add_category"),
 
