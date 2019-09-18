@@ -21,6 +21,7 @@ def  get_title(value,args):
 		if value is arg.id:
 			return arg.name
 
+
 @register.simple_tag
 def define(val=None):
   return val

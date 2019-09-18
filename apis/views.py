@@ -3,6 +3,7 @@ import os
 from django.shortcuts import render
 from django.contrib.auth.models import User
 from users.models import UserDetails
+from products.models import Categories, SubCategories, Products, ProductImages
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404
 from datetime import datetime
@@ -12,7 +13,7 @@ from apis import constants as C
 
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from .model_serializers import UserSerializer, UserMSerializer, UserdetailsSerializer
+from .model_serializers import UserSerializer, UserMSerializer, UserdetailsSerializer, CategorySerializer, SubCategorySerializer, ProductsSerializer
 from rest_framework import viewsets
 from rest_framework.renderers import JSONRenderer, TemplateHTMLRenderer
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication, TokenAuthentication
@@ -92,6 +93,7 @@ class UserAuthViewSet(viewsets.ModelViewSet):
 
 		return Response(self.send)
 
+
 	@action(detail=False,methods=['get'],url_name="user_logout")
 	def user_logout(self,request):
 
@@ -100,7 +102,7 @@ class UserAuthViewSet(viewsets.ModelViewSet):
 			request.user.auth_token.delete()
 			self.authlog.info(f"LoggedOut || {user} !")
 			self.send['status']  = 1
-			self.send['message'] = "Logged Out Successfully !" 
+			self.send['message'] = "Logged Out Successfully !"
 
 		return Response(self.send)
 
@@ -134,15 +136,30 @@ class UserMViewSet(viewsets.ModelViewSet):
 		self.send['data']    = {}
 
 
+	def check_login(func):
+		
+		def closure(viewset,request,*args,**kwargs):
+			if request.auth:
+				return func(*args,**kwargs)
+			else:
+				send = {}
+
+				send['status']  = 0
+				send['message'] = "Please login!"
+
+			return Response(send)
+
+		return closure		
 	#==Inherited Methods (Request Recievers)==
+
 	#Get All Users
+	#@check_login
 	def list(self,request):
-		if request.auth:
-			if self.ProcessUsers():
-				users = self.userslist
-				self.send['status']  = 1
-				self.send['message'] = "success"
-				self.send['data']    = users
+		if self.ProcessUsers():
+			users = self.userslist
+			self.send['status']  = 1
+			self.send['message'] = "success"
+			self.send['data']    = users
 			return Response(self.send)
 
 		self.send['message'] = "Please login !"
@@ -253,5 +270,174 @@ class UserMViewSet(viewsets.ModelViewSet):
 		return False
 
 
-#=====================Functions==========================================
+#------------------------------------- Categgory View Set -------------------------------------------
 
+class CategoryViewSet(viewsets.ModelViewSet):
+
+	queryset         	   = Categories.objects.filter(status=1)
+	serializer_class 	   = CategorySerializer
+
+	#authentication_classes = [TokenAuthentication]
+	#permission_classes     = [IsAuthenticated]
+	#renderer_classes 	    = [JSONRenderer,TemplateHTMLRenderer]
+
+
+	#Tracking User Authentication
+	report_name = f"{log_path}/CategoryModel"
+	Log = Initiate_logging(report_name,10)
+	product_log = Log.Track()
+
+
+	#===Constructor=====================
+	def __init__(self,*args,**kwargs):
+		super().__init__(*args,**kwargs)
+		self.send    = {}
+		self.details = {}
+		self.request = None
+		self.single_record  = False
+
+		self.send['status']  = 0
+		self.send['message'] = "Data Not found!"
+		self.send['data']    = {}
+
+
+	def list(self,request):
+		print(request.resolver_match)
+		category_serializer = CategorySerializer(self.queryset,many=True)
+
+		self.send['data'] = category_serializer.data
+
+		if self.send['data']:
+			self.send['status']  = 1 
+			self.send['message'] = "Success" 
+
+		return Response(self.send)
+
+
+	def retrieve(self,request,pk=0):
+		category = Categories.objects.filter(pk=pk)
+
+		if category and category[0]:
+			category_serializer = CategorySerializer(instance=category[0])
+			self.send['data'] = category_serializer.data
+
+		if self.send['data']:
+			self.send['status']  = 1 
+			self.send['message'] = "Success"
+
+		return Response(self.send)
+
+#-------------------------------------Sub Categgory View Set -------------------------------------------
+
+class SubCategoryViewSet(viewsets.ModelViewSet):
+
+	queryset         	   = SubCategories.objects.filter(status=1)
+	serializer_class 	   = SubCategorySerializer
+
+	authentication_classes = [TokenAuthentication]
+	permission_classes     = [IsAuthenticated]
+	#renderer_classes 	    = [JSONRenderer,TemplateHTMLRenderer]
+
+
+	#Tracking User Authentication
+	report_name = f"{log_path}/CategoryModel"
+	Log = Initiate_logging(report_name,10)
+	product_log = Log.Track()
+
+
+	#===Constructor=====================
+	def __init__(self,*args,**kwargs):
+		super().__init__(*args,**kwargs)
+		self.send    = {}
+		self.details = {}
+		self.request = None
+		self.single_record  = False
+
+		self.send['status']  = 0
+		self.send['message'] = "Data Not found!"
+		self.send['data']    = {}
+
+
+	def list(self,request):
+
+		subcategory_serializer = SubCategorySerializer(self.queryset,many=True)
+
+		self.send['data'] = subcategory_serializer.data
+
+		if self.send['data']:
+			self.send['status']  = 1 
+			self.send['message'] = "Success" 
+
+		return Response(self.send)
+
+
+	def retrieve(self,request,pk=0):
+		subcategory = SubCategories.objects.filter(pk=pk)
+
+		if subcategory and subcategory[0]:
+			subcategory_serializer = SubCategorySerializer(subcategory[0])
+			self.send['data'] = subcategory_serializer.data
+
+		if self.send['data']:
+			self.send['status']  = 1 
+			self.send['message'] = "Success" 
+
+		return Response(self.send)
+
+
+#------------------------------------- Products View Set -------------------------------------------
+
+class ProductsViewSet(viewsets.ModelViewSet):
+
+	queryset         	   = Products.objects.filter(status=1)
+	serializer_class 	   = ProductsSerializer
+
+	authentication_classes = [TokenAuthentication]
+	permission_classes     = [IsAuthenticated]
+	#renderer_classes 	    = [JSONRenderer,TemplateHTMLRenderer]
+
+
+	#Tracking User Authentication
+	report_name = f"{log_path}/ProductModel"
+	Log = Initiate_logging(report_name,10)
+	product_log = Log.Track()
+
+
+	#===Constructor=====================
+	def __init__(self,*args,**kwargs):
+		super().__init__(*args,**kwargs)
+		self.send    = {}
+		self.details = {}
+		self.request = None
+		self.single_record  = False
+
+		self.send['status']  = 0
+		self.send['message'] = "Data Not found!"
+		self.send['data']    = {}
+
+
+	def list(self,request):
+
+		product_serializer = ProductsSerializer(self.queryset,many=True)
+
+		self.send['data'] = product_serializer.data
+
+		if self.send['data']:
+			self.send['status']  = 1 
+			self.send['message'] = "Success" 
+
+		return Response(self.send)
+
+
+	def retrieve(self,request,pk=0):
+		product = Products.objects.filter(pk=pk)
+
+		if product and product[0]:
+			product_serializer = ProductsSerializer(product[0])
+			self.send['data'] = product_serializer.data
+
+		if self.send['data']:
+			self.send['status']  = 1
+			self.send['message'] = "Success"
+
+		return Response(self.send)

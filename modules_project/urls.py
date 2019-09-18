@@ -29,7 +29,7 @@ urlpatterns = [ url(r'^apis/', include((router.urls,"apis"),namespace="apis"))]
 urlpatterns += [
                 url(r'^admin/', admin.site.urls),
                 url(r'^users/', include("users.urls", namespace="users")),
-                
+
                 url(r'^dashboard/', include("dashboard.urls", namespace="dashboard")),
                 url(r'^dashboard/products/', include("products.urls", namespace="products")),
 			  ]

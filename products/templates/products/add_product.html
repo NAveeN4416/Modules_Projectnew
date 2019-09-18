@@ -17,7 +17,7 @@
       <div class="card">
         <div class="card-header"><h5 class="card-header-text"> {{ data.title }}</h5></div>
           <div class="card-block">
-            <form id="insert_services" action="{% url 'products:add_product' %}" method="post" enctype="multipart/form-data">
+            <form id="insert_services" action="{% url 'products:add_product' data.sub_category.id %}" method="post" enctype="multipart/form-data">
             {% csrf_token %}
                <div class="form-group row">
                   <label for="example-tel-input" class="col-xs-2 col-form-label form-control-label">Name<span class="important">*</span></label>
@@ -32,17 +32,17 @@
                   </div>
               </div>
               <div class="form-group row">
-                  <label for="example-tel-input" class="col-xs-2 col-form-label form-control-label">Discount %</label>
+                  <label for="example-tel-input" class="col-xs-2 col-form-label form-control-label">Discount Price</label>
                   <div class="col-sm-4">
-                    <input type="text" name="discount" class="form-control" placeholder="eg: 10">
+                    <input type="text" name="discount_price" class="form-control" placeholder="eg: 10">
                   </div>
               </div>
-              <div class="form-group row">
+              <!-- <div class="form-group row">
                   <label for="example-tel-input" class="col-xs-2 col-form-label form-control-label">Discount Price</label>
                   <div class="col-sm-4">
                     <input type="text" name="discount_price" class="form-control" disabled>
                   </div>
-              </div>
+              </div> -->
               <div class="form-group row">
                 <label for="example-tel-input" class="col-xs-2 col-form-label form-control-label">Quantity<span class="important">*</span></label>
                 <div class="col-sm-4">
@@ -52,10 +52,9 @@
               <div class="form-group row">
                 <label for="example-tel-input" class="col-xs-2 col-form-label form-control-label">Images<span class="important">*</span></label>
                 <div class="col-sm-4">
-                  <input type="file" name="product_images" class="form-control" required>
+                  <input type="file" name="product_images" class="form-control" required multiple>
                 </div>
               </div>
-
               <!-- <div class="form-group row">
                   <label for="example-tel-input" class="col-xs-3 col-form-label form-control-label">Rules Content(Ar)*</label>
                   <div class="col-sm-9">
@@ -73,27 +72,30 @@
                 </div>    
               </div>
               <div class="form-group row">
-<!--                   <label for="example-tel-input" class="col-xs-2 col-form-label form-control-label">Address</label>
-<div class="col-sm-4">
-  <input type="text" name="data[discount]" class="form-control" id="show_address">
-</div>
-              </div>
-              <div class="form-group row">
-                <label for="example-number-input" class="col-xs-2 col-form-label form-control-label">Latitude</label>
-                <div class="col-sm-4">
-<input type="text" class="form-control" name="latitude" id="latitude" value="" readonly>
-                </div>
 
-                <label for="example-number-input" class="col-xs-2 col-form-label form-control-label">Longitude</label>
-                <div class="col-sm-4">
-<input type="text" class="form-control" name="longitude" id="longitude" value="" readonly>
-                </div>
+              <!--                   
+              <label for="example-tel-input" class="col-xs-2 col-form-label form-control-label">Address</label>
+              <div class="col-sm-4">
+                <input type="text" name="data[discount]" class="form-control" id="show_address">
               </div>
-              <div class="form-group row">
-                <div class="col-md-12" style="margin-top: 20px;">
-<div id="outlet_map" style="height:300px"></div>
-                </div>
-              </div> -->
+                            </div>
+                            <div class="form-group row">
+                              <label for="example-number-input" class="col-xs-2 col-form-label form-control-label">Latitude</label>
+                              <div class="col-sm-4">
+              <input type="text" class="form-control" name="latitude" id="latitude" value="" readonly>
+                              </div>
+
+                              <label for="example-number-input" class="col-xs-2 col-form-label form-control-label">Longitude</label>
+                              <div class="col-sm-4">
+              <input type="text" class="form-control" name="longitude" id="longitude" value="" readonly>
+                              </div>
+                            </div>
+                            <div class="form-group row">
+                              <div class="col-md-12" style="margin-top: 20px;">
+              <div id="outlet_map" style="height:300px"></div>
+                              </div>
+              </div> 
+              -->
 
               <input type="hidden" id="pid" name="pid" value="">
 

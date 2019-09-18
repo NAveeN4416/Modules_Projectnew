@@ -33,6 +33,7 @@ from core_modules.decors import Set_RequestObject, Check_Login, Check_SuperUser
 # Model Constants
 contants = {
 			 'products'      : Products,
+			 'product_images': ProductImages,
 			 'categories'    : Categories,
 			 'subcategories' : SubCategories,
 			} 
@@ -55,9 +56,9 @@ def Categories_List(request):
 	context = {}
 
 	context['title'] 	 = 'Categories List'
-	context['page_name'] = 'products'
+	context['page_name'] = 'categories'
 
-	categories =  Categories.objects.filter(status=1) 
+	categories =  Categories.get_active.all()
 	context['categories'] = categories
 
 	return render(request,'categories/categories_list.html',{'data':context})
@@ -90,9 +91,31 @@ def Add_Category(request,ref_id=0):
 	context = {}
 
 	context['title'] 	 = 'Add Category'
-	context['page_name'] = 'products'
+	context['page_name'] = 'categories'
 	context['category']  = category
 	return render(request,'categories/add_category.html',{'data':context})
+
+
+
+@cache_control(no_cache=True, must_revalidate=True, no_store=True)
+@Set_RequestObject
+@Check_Login
+@Check_SuperUser
+def View_Category(request,ref_id=0):
+
+	context = {}
+	context['title'] 	  = 'Category Details'
+	context['page_name']  = 'categories'
+
+	category =  Categories.objects.get(pk=ref_id) 
+	subcategories = SubCategories.objects.filter(category=category)
+
+
+	context['category']  = category
+	context['subcategories'] = subcategories
+
+	return render(request,'categories/view_category.html',{'data':context})
+
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 @Set_RequestObject
@@ -109,17 +132,36 @@ def Delete_Category(request,ref_id=0):
 @Set_RequestObject
 @Check_Login
 @Check_SuperUser
-def SubCategories_list(request):
+def Add_SubCategory(request,category_id=0,ref_id=0):
 
 	context = {}
+	context['title'] 	  = 'Add SubCategory'
+	context['page_name']  = 'products'
 
-	context['title'] 	 = 'SubCategories List'
-	context['page_name'] = 'products'
+	subcategory = table_obj('subcategories',ref_id)
+	category    = table_obj('categories',category_id)
 
-	subcategories =  SubCategories.objects.filter(status=1) 
-	context['subcategories'] = subcategories
+	if request.method == 'POST' :
+		data  = request.POST.copy()
+		category = Categories.objects.get(pk=data['category_id'])
 
-	return render(request,'sub_categories/sub_categories_list.html',{'data':context})
+		image = request.FILES.get('image',False)
+
+		if image:
+			old_image = category.image
+			subcategory.image = image
+
+		subcategory.category      = category
+		subcategory.sub_category  = data['subcategory_name']
+		subcategory.status 	      = data['status']
+		subcategory.save();
+
+	categories =  Categories.objects.filter(status=1)
+	context['category']    = category
+	context['categories']  = categories
+	context['subcategory'] = subcategory
+
+	return render(request,'sub_categories/add_sub_category.html',{'data':context})
 
 
 
@@ -127,29 +169,31 @@ def SubCategories_list(request):
 @Set_RequestObject
 @Check_Login
 @Check_SuperUser
-def Add_SubCategory(request,ref_id=0):
+def View_SubCategory(request,ref_id=0):
+
+	subcategory =  SubCategories.objects.get(pk=ref_id) 
+	products    = Products.objects.filter(subcategory=subcategory)
 
 	context = {}
-	context['title'] 	  = 'Add SubCategory'
-	context['page_name']  = 'products'
+	context['title'] 	  = 'SubCategory Details'
+	context['page_name']  = 'categories'
 
-	subcategory = table_obj('subcategories',ref_id)
+	context['subcategory']  = subcategory
+	context['products'] 	= products
 
-	if request.method == 'POST' :
-		data  = request.POST.copy()
-		category = Categories.objects.get(pk=data['category_id'])
+	return render(request,'sub_categories/view_subcategory.html',{'data':context})
 
-		subcategory.category      = category
-		subcategory.sub_category  = data['subcategory_name']
-		subcategory.status 	      = data['status']
-		subcategory.image 		  = request.FILES['image']
-		subcategory.save();
 
-	categories =  Categories.objects.filter(status=1) 
-	context['categories']  = categories
-	context['subcategory'] = subcategory
+@cache_control(no_cache=True, must_revalidate=True, no_store=True)
+@Set_RequestObject
+@Check_Login
+@Check_SuperUser
+def Delete_SubCategory(request,ref_id=0):
+	category = table_obj('subcategories',ref_id)
+	category.delete()
 
-	return render(request,'sub_categories/add_sub_category.html',{'data':context})
+	return redirect('products:categories_list')
+
 
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
@@ -169,22 +213,52 @@ def Products_List(request):
 @Set_RequestObject
 @Check_Login
 @Check_SuperUser
-def Add_Product(request):
+def Add_Product(request,subcategory_id=0,ref_id=0):
+
+	sub_category = table_obj('subcategories',subcategory_id)
+	product      = table_obj('products',ref_id)
 
 	if request.method == 'POST' :
-		data  = request.POST.copy()
-		files = request.FILES.getlist('product_images')
-		return HttpResponse(data)
+		data   = request.POST.copy()
+		images = request.FILES.getlist('product_images')
 
-		product = Products(data)
+		for image in images :
+			product.image = image
+			break
 
-		product['user'] = request.user
-		product['subcategory'] = SubCategories()
+		product.product_name   = data['product_name']
+		product.product_id 	   = "Product Id"
+		product.price 		   = data['price']
+		product.quantity 	   = data['quantity']
+		product.address 	   = "Address"
+		product.discount_price = data['discount_price']
+		product.user 		   = request.user
+		product.subcategory    = sub_category
+
+		product.save()
+
+		if product.id:
+			product_images = ProductImages.objects.filter(product=product)
+
+			if images:
+				#Old Records
+				if product_images:
+					product_images.delete()
+
+				for image in images:
+					product_images = ProductImages()
+					product_images.product = product
+					product_images.image   = image
+					product_images.status  = 1
+					product_images.save()
+
+		return redirect('products:view_subcategory',subcategory_id)
 
 	context = {}
 
-	context['title'] 	 = 'Add Product'
-	context['page_name'] = 'products'
+	context['sub_category'] = sub_category
+	context['title'] 	 	= 'Add Product'
+	context['page_name'] 	= 'categories'
 
 	return render(request,'products/add_product.html',{'data':context})
 

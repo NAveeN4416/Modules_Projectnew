@@ -9,11 +9,8 @@
         <div class="card-header">
         	<h5 class="card-header-text"> {{ data.title }}</h5>
         	<span>
-            <a href="{% url 'products:subcategories_list' %}">
-              <button class="btn btn-success" style="margin-left: 59%"> SubCategories</button>
-            </a>
             <a href="{% url 'products:add_category' %}">
-              <button class="btn btn-success fa fa-plus" style="margin-left: 1%"> Category</button>
+              <button class="btn btn-success fa fa-plus" style="margin-left: 70%"> Category</button>
             </a>
         	</span>
         </div>
@@ -46,8 +43,9 @@
                     <td><img src="{{ category.image.url }}" height="50"></td>
                     <td><span class="badge badge-success">{{ category.status|status }}</span></td>
                     <td>
-                      <a href="{% url 'products:delete_category' category.id %}"><button class="btn btn-sm btn-danger"><i class="fa fa-trash" aria-hidden="true"></i>Delete</button></a>
-                      <a href="{% url 'products:add_category' category.id %}"><button class="btn btn-sm btn-warning"><i class="fa fa-edit" aria-hidden="true"></i>Edit</button></a>
+                      <a href="{% url 'products:view_category' category.id %}"><button class="btn btn-sm btn-success"><i class="fa fa-eye" aria-hidden="true"></i> View Details</button></a><br><br>
+                      <a href="{% url 'products:edit_category' category.id %}"><button class="btn btn-sm btn-warning"><i class="fa fa-edit" aria-hidden="true"></i>Edit</button></a>
+                       <a href="{% url 'products:delete_category' category.id %}"><button class="btn btn-sm btn-danger"><i class="fa fa-trash" aria-hidden="true"></i>Delete</button></a>
                     </td>
                 </tr>
               {% endfor %}

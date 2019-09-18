@@ -127,13 +127,13 @@ li.dropdown.active .inactive-arrow{
                 <!-- sidebar profile Menu-->
                 <!-- Sidebar Menu-->
                 <ul class="sidebar-menu">
-                    <li class=" {% if data.page_name == 'dashboard' %}  active {% endif %}">
+                    <li class="{% if data.page_name == 'dashboard' %}  active {% endif %}">
                         <a class="waves-effect waves-dark" href="{% url 'dashboard:index' %}" >
                         <i class="fa fa-tachometer"></i><span> Dashboard</span></a>
                     </li>
-                    <li class="{% if data.page_name == 'products' %}  active {% endif %}">
-                        <a class="waves-effect waves-dark" href="{% url 'products:products_list' %}" >
-                        <i class="fa fa-tachometer"></i><span> Products</span></a>
+                    <li class="{% if data.page_name == 'categories' %}  active {% endif %}">
+                        <a class="waves-effect waves-dark" href="{% url 'products:categories_list' %}" >
+                        <i class="fa fa-tachometer"></i><span> Categories</span></a>
                     </li>
                     <li class="{% if data.page_name == 'users' %}  active {% endif %}">
                         <a class="waves-effect waves-dark" href="#" >
