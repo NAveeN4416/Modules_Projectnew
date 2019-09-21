@@ -27,6 +27,10 @@ class Categories(models.Model):
 	def __str__(self):
 		return '{}'.format(self.category_name)
 
+	def get_absolute_url(self):
+	    from django.urls import reverse
+	    return reverse('products:view_category', args=[str(self.id)])
+
 
 class SubCategories(models.Model):
 
@@ -70,4 +74,4 @@ class ProductImages(models.Model):
 	updated_at = models.DateTimeField(auto_now=True)
 
 	def __str__(self):
-		return '{}'.format(self.product_name)
+		return '{}'.format(self.product.product_name)

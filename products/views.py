@@ -110,7 +110,6 @@ def View_Category(request,ref_id=0):
 	category =  Categories.objects.get(pk=ref_id) 
 	subcategories = SubCategories.objects.filter(category=category)
 
-
 	context['category']  = category
 	context['subcategories'] = subcategories
 

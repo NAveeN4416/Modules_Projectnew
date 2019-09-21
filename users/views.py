@@ -1,5 +1,4 @@
 import os
-
 from django.utils import timezone
 from django.shortcuts import render,redirect
 from django.http import HttpRequest, HttpResponse ,JsonResponse
@@ -8,7 +7,7 @@ import json
 from django.contrib.auth.models import User
 from .models import UserDetails
 from users import constants as C
-from django.contrib.auth import login as auth_login, logout
+from django.contrib.auth import login as auth_login, logout, get_user
 from django.contrib.auth.hashers import check_password
 from django.contrib.sessions.models import Session
 from django.contrib import messages
@@ -80,7 +79,6 @@ def register(request):
 #Login
 @Set_RequestObject
 def login(request):
-
 	if request.user.is_authenticated:
 		if request.user.is_superuser:
 			return redirect('dashboard:index')

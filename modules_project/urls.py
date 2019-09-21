@@ -35,9 +35,6 @@ urlpatterns += [
 			  ]
 
 
-
-
-
 urlpatterns += [
                     url(r'^as_views/users/$', UserViewSet.as_view({'get':'list'})),
                     url(r'^as_views/users/(?P<pk>[^/.]+)/', UserViewSet.as_view({'get':'retrieve'})),
