@@ -1,0 +1,71 @@
+{% extends 'includes/base.html' %}
+{% load tags %}
+
+
+{% block content %}
+  <div class="row">
+    <div class="col-sm-12">
+      <div class="card">
+        <div class="card-header">
+          <h5 class="card-header-text"> {{ data.title }}</h5>
+        </div>
+        <div class="card-block">
+          <p>Category Name  : {{data.subcategory.sub_category}}</p>
+          <p>Category Image : <img src="{{ data.subcategory.image.url }}" height="50"></p>
+          <p>Status : {{ data.subcategory.status|status }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-sm-12">
+      <div class="card">
+        <div class="card-header">
+        	<h5 class="card-header-text"> Products List</h5>
+        	<span>
+            <a href="{% url 'products:add_product' data.subcategory.id  %}">
+              <button class="btn btn-success fa fa-plus" style="margin-left: 73%"> Product</button>
+            </a>
+        	</span>
+        </div>
+        <div class="card-block">
+			    <table id="advanced-table" class="table dt-responsive table-striped table-bordered nowrap">
+            <thead>
+              <tr>
+                <th>S NO</th>
+                <th>Product Name</th>
+                <th>Image</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tfoot>
+              <tr>
+                <th>S NO</th>
+                <th>Product Name</th>
+                <th>Image</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </tfoot>
+
+            <tbody>
+              {% for product in data.products %}
+                <tr>
+                    <td>{{ product.id }}</td>
+                    <td><span style="font-size: 15px">{{ product.product_name }}</span></td>
+                    <td><img src="{{ product.image.url }}" height="50"></td>
+                    <td><span class="badge badge-success">{{ product.status|status }}</span></td>
+                    <td>
+                    </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
