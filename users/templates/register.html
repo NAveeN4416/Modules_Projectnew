@@ -94,95 +94,81 @@
         {% csrf_token %}
         <div class="form-group input-group">
             <div class="input-group-prepend">
-                <span class="input-group-text"> <i class="fa fa-user"></i> </span>
-             </div>
-             {{form.username}}
-             {% if err.username %}
-              <br>
-              <p class="error">{{ err.username }}</p>
-             {% endif %}
+              <span class="input-group-text"> <i class="fa fa-user"></i> </span>
+            </div>
+            {{form.username}}
         </div>
+        {% if err.username %}
+          <p class="error">{{ err.username }}</p>
+        {% endif %}
+
         <div class="form-group input-group">
             <div class="input-group-prepend">
-                <span class="input-group-text"> <i class="fa fa-user"></i> </span>
-             </div>
-             {{form.first_name}}
-             {% if err.first_name %}
-              <br>
-              <p class="error">{{ err.first_name }}</p>
-             {% endif %}
+              <span class="input-group-text"> <i class="fa fa-user"></i> </span>
+            </div>
+            {{form.first_name}}
         </div>
+         {% if err.first_name %}
+          <p class="error">{{ err.first_name }}</p>
+         {% endif %}
+
         <div class="form-group input-group">
             <div class="input-group-prepend">
-                <span class="input-group-text"> <i class="fa fa-user"></i> </span>
-             </div>
-             {{form.last_name}}
-             {% if err.last_name %}
-              <br>
-              <p class="error">{{ err.last_name }}</p>
-             {% endif %}
-        </div> 
+              <span class="input-group-text"> <i class="fa fa-user"></i> </span>
+            </div>
+            {{form.last_name}}
+        </div>
+         {% if err.last_name %}
+          <p class="error">{{ err.last_name }}</p>
+         {% endif %}
+
         <div class="form-group input-group">
             <div class="input-group-prepend">
-                <span class="input-group-text"> <i class="fa fa-envelope"></i> </span>
-             </div>
+              <span class="input-group-text"> <i class="fa fa-envelope"></i> </span>
+            </div>
             {{form.email}}
-             {% if err.email %}
-              <br>
-              <p class="error">{{ err.email }}</p>
-             {% endif %}
         </div>
+         {% if err.email %}
+          <p class="error">{{ err.email }}</p>
+         {% endif %}
+
         <div class="form-group input-group">
             <div class="input-group-prepend">
-                <span class="input-group-text"> <i class="fa fa-phone"></i> </span>
+              <span class="input-group-text"> <i class="fa fa-phone"></i> </span>
             </div>
             <select class="custom-select" style="max-width: 80px;">
-                <option selected="">+91</option>
+              <option selected="">+91</option>
             </select>
            {{form.phone_number}}
-           {% if err.phone_number %}
-            <br>
-            <p class="error">{{ err.phone_number }}</p>
-           {% endif %}
         </div>
+       {% if err.phone_number %}
+        <p class="error">{{ err.phone_number }}</p>
+       {% endif %}
+
         <div class="form-group input-group">
             <div class="input-group-prepend">
-                <span class="input-group-text"> <i class="fa fa-lock"></i> </span>
+              <span class="input-group-text"> <i class="fa fa-lock"></i> </span>
             </div>
             {{form.password1}}
-            {% if err.password1 %}
-              <br>
-              <p class="error">{{ err.password1 }}</p>
-            {% endif %}
         </div>
+        {% if err.password1 %}
+          <p class="error">{{ err.password1 }}</p>
+        {% endif %}
+
         <div class="form-group input-group">
             <div class="input-group-prepend">
-                <span class="input-group-text"> <i class="fa fa-lock"></i> </span>
+              <span class="input-group-text"> <i class="fa fa-lock"></i> </span>
             </div>
             {{form.password2}}
-            {% if err.password2 %}
-              <br>
-              <p class="error">{{ err.password2 }}</p>
-            {% endif %}
         </div>
-        <!-- <div class="form-group input-group">
-           <div class="input-group-prepend">
-               <span class="input-group-text"> <i class="fa fa-building"></i> </span>
-           </div>
-           <select class="form-control">
-               <option selected=""> Select job type</option>
-               <option>Designer</option>
-               <option>Manager</option>
-               <option>Accaunting</option>
-           </select>
-        </div> -->                                     
+          {% if err.password2 %}
+            <p class="error">{{ err.password2 }}</p>
+          {% endif %}                                   
         <div class="form-group">
             <button type="submit" class="btn btn-primary btn-block"> Create Account  </button>
         </div> <!-- form-group// -->      
         <p class="text-center">Already have an account ? <a href="{% url 'users:login' %}">LogIn</a> </p>                                                                 
     </form>
     </article>
-
-
 
 {% endblock content %}

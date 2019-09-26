@@ -6,6 +6,7 @@ app_name = "users"
 
 urlpatterns = [
 				url(r'^register/',  		     views.register,  					name="register"),
+				url(r'^forms_demo/',  		     views.forms_demo,  				name="forms_demo"),
 				url(r'^login/',     		     views.login,     					name="login"),
 				url(r'^logout/',    		     views.logout,    					name="logout"),
 				url(r'^dashboard/', 		     views.dashboard, 					name="dashboard"),

@@ -17,8 +17,10 @@ from .model_serializers import UserSerializer, UserMSerializer, UserdetailsSeria
 from rest_framework import viewsets
 from rest_framework.renderers import JSONRenderer, TemplateHTMLRenderer
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication, TokenAuthentication
+from .CustomAuthentication  import TokenAuthentication as TokenAuth
 from rest_framework.authtoken.models import Token
 from rest_framework.permissions import IsAuthenticated
+from django.conf import settings
 
 
 #Create a log path for this file
@@ -26,6 +28,16 @@ file_name = __name__.split('.')
 file_path = '/'.join(file_name)
 log_path  = f"logs/{file_path}/"
 os.makedirs(log_path,exist_ok=True)
+
+
+def login_required():
+
+	send = {}
+	send['status']  = '0'
+	send['message'] = "Please login !"
+	send['data']    = {}
+
+	return Response(send)
 
 
 # ViewSets define the view behavior.
@@ -61,16 +73,16 @@ class UserAuthViewSet(viewsets.ModelViewSet):
 		super().__init__(*args,**kwargs)
 		self.send    = {}
 
-		self.send['status']  = 0
+		self.send['status']  = '0'
 		self.send['message'] = "User Not found!"
 
 
 	@action(detail=False,methods=['post'],url_name="user_login")
 	def user_login(self,request):
 
-		#if request.auth:
-		#	self.send['message'] = f"You have already LoggedIn Mr.{request.user}"
-		#	return Response(self.send)
+		if request.auth:
+			self.send['message'] = f"You have already LoggedIn Mr.{request.user}"
+			return Response(self.send)
 
 		email    = request.POST.get('email',None)
 		mobile   = request.POST.get('mobile',None)
@@ -81,7 +93,7 @@ class UserAuthViewSet(viewsets.ModelViewSet):
 			check_pass = check_password(password,user.password)
 
 			if check_pass:
-				self.send['status']  = 1
+				self.send['status']  = '1'
 				token = Token.objects.get_or_create(user=user)
 				self.send['message'] = "Loggedin Success"
 				self.send['token']   = str(token[0])
@@ -101,7 +113,7 @@ class UserAuthViewSet(viewsets.ModelViewSet):
 			user = request.user
 			request.user.auth_token.delete()
 			self.authlog.info(f"LoggedOut || {user} !")
-			self.send['status']  = 1
+			self.send['status']  = '1'
 			self.send['message'] = "Logged Out Successfully !"
 
 		return Response(self.send)
@@ -112,7 +124,7 @@ class UserMViewSet(viewsets.ModelViewSet):
 	queryset         	   = User.objects.all()
 	serializer_class 	   = UserMSerializer
 
-	#authentication_classes = [TokenAuthentication]
+	authentication_classes = [TokenAuth]
 	#permission_classes     = [IsAuthenticated]
 	#renderer_classes 	    = [JSONRenderer,TemplateHTMLRenderer]
 
@@ -131,33 +143,18 @@ class UserMViewSet(viewsets.ModelViewSet):
 		self.request = None
 		self.single_record  = False
 
-		self.send['status']  = 0
+		self.send['status']  = '0'
 		self.send['message'] = "User Not found!"
 		self.send['data']    = {}
 
-
-	def check_login(func):
-		
-		def closure(viewset,request,*args,**kwargs):
-			if request.auth:
-				return func(*args,**kwargs)
-			else:
-				send = {}
-
-				send['status']  = 0
-				send['message'] = "Please login!"
-
-			return Response(send)
-
-		return closure		
+	
 	#==Inherited Methods (Request Recievers)==
 
 	#Get All Users
-	#@check_login
 	def list(self,request):
 		if self.ProcessUsers():
 			users = self.userslist
-			self.send['status']  = 1
+			self.send['status']  = '1'
 			self.send['message'] = "success"
 			self.send['data']    = users
 			return Response(self.send)
@@ -177,7 +174,7 @@ class UserMViewSet(viewsets.ModelViewSet):
 		else:
 			self.queryset = users
 			if self.ProcessUsers():
-				self.send['status']  = 1
+				self.send['status']  = '1'
 				self.send['message'] = "success"
 				self.send['data']    = self.userslist
 
@@ -236,7 +233,7 @@ class UserMViewSet(viewsets.ModelViewSet):
 		else:
 			user.is_active = False if user.is_active else True
 			user.save()
-			self.send['status']  = 1 ;
+			self.send['status']  = '1' ;
 			self.send['message'] = C.ACTIVATED if user.is_active else C.DEACTIVATED ;
 
 		return Response(self.send)
@@ -277,7 +274,7 @@ class CategoryViewSet(viewsets.ModelViewSet):
 	queryset         	   = Categories.objects.filter(status=1)
 	serializer_class 	   = CategorySerializer
 
-	#authentication_classes = [TokenAuthentication]
+	authentication_classes = [TokenAuth]
 	#permission_classes     = [IsAuthenticated]
 	#renderer_classes 	    = [JSONRenderer,TemplateHTMLRenderer]
 
@@ -296,25 +293,28 @@ class CategoryViewSet(viewsets.ModelViewSet):
 		self.request = None
 		self.single_record  = False
 
-		self.send['status']  = 0
+		self.send['status']  = '0'
 		self.send['message'] = "Data Not found!"
 		self.send['data']    = {}
 
-
 	def list(self,request):
-		print(request.resolver_match)
+
 		category_serializer = CategorySerializer(self.queryset,many=True)
 
 		self.send['data'] = category_serializer.data
 
 		if self.send['data']:
-			self.send['status']  = 1 
+			self.send['status']  = '1' 
 			self.send['message'] = "Success" 
 
 		return Response(self.send)
 
 
 	def retrieve(self,request,pk=0):
+
+		if request.auth is None:
+			return login_required()
+
 		category = Categories.objects.filter(pk=pk)
 
 		if category and category[0]:
@@ -322,11 +322,27 @@ class CategoryViewSet(viewsets.ModelViewSet):
 			self.send['data'] = category_serializer.data
 
 		if self.send['data']:
-			self.send['status']  = 1 
+			self.send['status']  = '1' 
 			self.send['message'] = "Success"
 
 		return Response(self.send)
 
+
+	def create(self,request):
+		self.send['message'] = "Not Implemented"
+		return Response(self.send)
+
+	def update(self,request,pk=None):
+		self.send['message'] = "Not Implemented"
+		return Response(self.send)
+
+	def partial_update(self,request,pk=None):
+		self.send['message'] = "Not Implemented"
+		return Response(self.send)
+
+	def destroy(self,request,pk=None):
+		self.send['message'] = "Not Implemented"
+		return Response(self.send)
 #-------------------------------------Sub Categgory View Set -------------------------------------------
 
 class SubCategoryViewSet(viewsets.ModelViewSet):
@@ -334,8 +350,8 @@ class SubCategoryViewSet(viewsets.ModelViewSet):
 	queryset         	   = SubCategories.objects.filter(status=1)
 	serializer_class 	   = SubCategorySerializer
 
-	authentication_classes = [TokenAuthentication]
-	permission_classes     = [IsAuthenticated]
+	authentication_classes = [TokenAuth]
+	#permission_classes     = [IsAuthenticated]
 	#renderer_classes 	    = [JSONRenderer,TemplateHTMLRenderer]
 
 
@@ -365,7 +381,7 @@ class SubCategoryViewSet(viewsets.ModelViewSet):
 		self.send['data'] = subcategory_serializer.data
 
 		if self.send['data']:
-			self.send['status']  = 1 
+			self.send['status']  = '1' 
 			self.send['message'] = "Success" 
 
 		return Response(self.send)
@@ -379,11 +395,28 @@ class SubCategoryViewSet(viewsets.ModelViewSet):
 			self.send['data'] = subcategory_serializer.data
 
 		if self.send['data']:
-			self.send['status']  = 1 
+			self.send['status']  = '1' 
 			self.send['message'] = "Success" 
 
 		return Response(self.send)
 
+
+
+	def create(self,request):
+		self.send['message'] = "Not Implemented"
+		return Response(self.send)
+
+	def update(self,request,pk=None):
+		self.send['message'] = "Not Implemented"
+		return Response(self.send)
+
+	def partial_update(self,request,pk=None):
+		self.send['message'] = "Not Implemented"
+		return Response(self.send)
+
+	def destroy(self,request,pk=None):
+		self.send['message'] = "Not Implemented"
+		return Response(self.send)
 
 #------------------------------------- Products View Set -------------------------------------------
 
@@ -392,8 +425,8 @@ class ProductsViewSet(viewsets.ModelViewSet):
 	queryset         	   = Products.objects.filter(status=1)
 	serializer_class 	   = ProductsSerializer
 
-	authentication_classes = [TokenAuthentication]
-	permission_classes     = [IsAuthenticated]
+	authentication_classes = [TokenAuth]
+	#permission_classes     = [IsAuthenticated]
 	#renderer_classes 	    = [JSONRenderer,TemplateHTMLRenderer]
 
 
@@ -411,7 +444,7 @@ class ProductsViewSet(viewsets.ModelViewSet):
 		self.request = None
 		self.single_record  = False
 
-		self.send['status']  = 0
+		self.send['status']  = '0'
 		self.send['message'] = "Data Not found!"
 		self.send['data']    = {}
 
@@ -423,7 +456,7 @@ class ProductsViewSet(viewsets.ModelViewSet):
 		self.send['data'] = product_serializer.data
 
 		if self.send['data']:
-			self.send['status']  = 1 
+			self.send['status']  = '1' 
 			self.send['message'] = "Success" 
 
 		return Response(self.send)
@@ -437,7 +470,24 @@ class ProductsViewSet(viewsets.ModelViewSet):
 			self.send['data'] = product_serializer.data
 
 		if self.send['data']:
-			self.send['status']  = 1
+			self.send['status']  = '1'
 			self.send['message'] = "Success"
 
+		return Response(self.send)
+
+
+	def create(self,request):
+		self.send['message'] = "Not Implemented"
+		return Response(self.send)
+
+	def update(self,request,pk=None):
+		self.send['message'] = "Not Implemented"
+		return Response(self.send)
+
+	def partial_update(self,request,pk=None):
+		self.send['message'] = "Not Implemented"
+		return Response(self.send)
+
+	def destroy(self,request,pk=None):
+		self.send['message'] = "Not Implemented"
 		return Response(self.send)

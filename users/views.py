@@ -1,8 +1,9 @@
 import os
+from datetime import datetime
 from django.utils import timezone
 from django.shortcuts import render,redirect
 from django.http import HttpRequest, HttpResponse ,JsonResponse
-from .forms import UserRegistration
+from .forms import UserRegistration, Forms_Demo
 import json
 from django.contrib.auth.models import User
 from .models import UserDetails
@@ -34,8 +35,32 @@ log_path  = f"logs/{file_path}/"
 os.makedirs(log_path,exist_ok=True)
 
 
+
+#Forms Demo
+#@Check_Login
+def forms_demo(request):
+
+	form = Forms_Demo()
+
+	if request.method == 'POST' :
+		data = request.POST.copy()
+		data.update({'image':request.FILES.get('image')})
+		print(data)
+		form = Forms_Demo(data)
+		if form.is_valid():
+			return HttpResponse("Yes, Valid :)")
+
+	form = form.as_p()
+
+	response =  render(request,'forms_demo.html',{'form':form})
+
+	#response.set_cookie('last_connection',datetime.now())
+	#request.session['username'] = "Naveen"
+
+	return response
+
+
 #Registration
-@Set_RequestObject
 @transaction.atomic
 def register(request):
 
@@ -77,7 +102,6 @@ def register(request):
 
 
 #Login
-@Set_RequestObject
 def login(request):
 	if request.user.is_authenticated:
 		if request.user.is_superuser:
@@ -121,7 +145,6 @@ def users_list(request):
 
 
 #Dashboard
-@Set_RequestObject
 @Check_Login
 @CheckUser
 def dashboard(request):
@@ -134,7 +157,6 @@ def dashboard(request):
 
 
 #Send Verification Link
-@Set_RequestObject
 def send_verification_link(request):
 
 	if request.method == 'POST':
@@ -158,7 +180,6 @@ def send_verification_link(request):
 
 
 #Forgot Password
-@Set_RequestObject
 def forgot_password(request):
 
 	if request.method == 'POST':
@@ -181,7 +202,6 @@ def forgot_password(request):
 
 
 #Change Password
-@Set_RequestObject
 def change_password(request,uidb64, token):
     try:
       uid  = urlsafe_base64_decode(uidb64).decode()
@@ -200,7 +220,6 @@ def change_password(request,uidb64, token):
 
 
 #Set Password
-@Set_RequestObject
 def set_password(request):
 	if request.method == 'POST':
 		password  = request.POST['password']
@@ -219,7 +238,6 @@ def set_password(request):
 
 
 #Activate Account
-#@Set_RequestObject
 def activate_account(request, uidb64, token):
     try:
       uid  = urlsafe_base64_decode(uidb64).decode()

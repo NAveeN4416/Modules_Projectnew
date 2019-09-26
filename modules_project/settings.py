@@ -49,8 +49,9 @@ INSTALLED_APPS = [
 #REST FRAMEWORK DEFAULTS
 REST_FRAMEWORK = {
                     'DEFAULT_AUTHENTICATION_CLASSES': [
-                        'rest_framework.authentication.TokenAuthentication',
-                        ]
+                                                        #'rest_framework.authentication.TokenAuthentication',
+                                                        #'apis.CustomAuthentication.TokenAuthentication', # Custom Changes
+                                                      ]
                 }
 
 
@@ -62,6 +63,8 @@ MIDDLEWARE = [
                 'django.contrib.auth.middleware.AuthenticationMiddleware',
                 'django.contrib.messages.middleware.MessageMiddleware',
                 'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
+                'users.middlewares.Set_RequestObject', #Keep this last
             ]
 
 ROOT_URLCONF = 'modules_project.urls'

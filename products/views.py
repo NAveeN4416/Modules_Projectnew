@@ -48,7 +48,6 @@ def table_obj(table_name,ref_id):
 
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
-@Set_RequestObject
 @Check_Login
 @Check_SuperUser
 def Categories_List(request):
@@ -65,7 +64,6 @@ def Categories_List(request):
 
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
-@Set_RequestObject
 @Check_Login
 @Check_SuperUser
 def Add_Category(request,ref_id=0):
@@ -98,7 +96,6 @@ def Add_Category(request,ref_id=0):
 
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
-@Set_RequestObject
 @Check_Login
 @Check_SuperUser
 def View_Category(request,ref_id=0):
@@ -117,7 +114,6 @@ def View_Category(request,ref_id=0):
 
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
-@Set_RequestObject
 @Check_Login
 @Check_SuperUser
 def Delete_Category(request,ref_id=0):
@@ -128,7 +124,6 @@ def Delete_Category(request,ref_id=0):
 
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
-@Set_RequestObject
 @Check_Login
 @Check_SuperUser
 def Add_SubCategory(request,category_id=0,ref_id=0):
@@ -165,7 +160,6 @@ def Add_SubCategory(request,category_id=0,ref_id=0):
 
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
-@Set_RequestObject
 @Check_Login
 @Check_SuperUser
 def View_SubCategory(request,ref_id=0):
@@ -184,7 +178,6 @@ def View_SubCategory(request,ref_id=0):
 
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
-@Set_RequestObject
 @Check_Login
 @Check_SuperUser
 def Delete_SubCategory(request,ref_id=0):
@@ -196,7 +189,6 @@ def Delete_SubCategory(request,ref_id=0):
 
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
-@Set_RequestObject
 @Check_Login
 @Check_SuperUser
 def Products_List(request):
@@ -209,7 +201,6 @@ def Products_List(request):
 
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
-@Set_RequestObject
 @Check_Login
 @Check_SuperUser
 def Add_Product(request,subcategory_id=0,ref_id=0):

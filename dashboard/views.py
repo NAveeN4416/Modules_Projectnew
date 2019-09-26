@@ -40,7 +40,6 @@ os.makedirs(log_path,exist_ok=True)
 
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
-@Set_RequestObject
 @Check_Login
 @Check_SuperUser
 def Index(request):
@@ -53,7 +52,6 @@ def Index(request):
 
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
-@Set_RequestObject
 @Check_Login
 def TermsConditions(request):
 	context = {}

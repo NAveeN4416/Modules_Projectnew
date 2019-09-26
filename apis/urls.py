@@ -7,7 +7,7 @@ from rest_framework import routers
 app_name = "apis"
 
 #API view urls
-router = routers.SimpleRouter()
+router = routers.SimpleRouter(trailing_slash=False)
 router.register(r'auth', UserAuthViewSet)
 router.register(r'users', UserMViewSet)
 router.register(r'categories', CategoryViewSet)
