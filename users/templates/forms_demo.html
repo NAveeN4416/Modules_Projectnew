@@ -1,0 +1,15 @@
+
+<style type="text/css">
+	
+.errorlist
+{
+	color: red;
+}
+
+</style>
+
+<form action="{% url 'users:forms_demo' %}" method="post" enctype="multipart/form-data">
+	{% csrf_token %}
+	{{form}}
+	<button type="submit">Submit</button>
+</form>
