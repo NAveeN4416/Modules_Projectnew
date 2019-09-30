@@ -11,7 +11,7 @@ from django.conf import settings
 class Set_RequestObject(MiddlewareMixin):
 
     def process_request(self,request):
-    	#print(request.session.get('username',None))
+    	#print(request.content_type)
     	settings.REQUEST_OBJECT = request
     	request.CONTENT_TYPE    = request.META.get('CONTENT_TYPE')
 

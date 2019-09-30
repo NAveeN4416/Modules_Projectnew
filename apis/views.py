@@ -197,6 +197,8 @@ class UserMViewSet(viewsets.ModelViewSet):
 		data = request.POST.copy()
 		data.update({'date_joined':datetime.now()})
 
+		serializer = UserSerializer(data=data)
+
 		users = User.objects.filter(Q(username=data['username']) | Q(email=data['email']))
 
 		if not users:
@@ -204,13 +206,31 @@ class UserMViewSet(viewsets.ModelViewSet):
 			if serializer.is_valid():
 				instance = UserSerializer(serializer,data=data)
 				serializer.save()
+				self.send['status']  = "1"
 				self.send['message'] = C.USERCREATED
+				self.send['errors'],self.send['validation_rules'] = self.required_fields(serializer)
 				return Response(self.send)
-			self.send['message'] = serializer.errors
+			self.send['message'] = "Invalid data !"
 		else:
 			self.send['message'] = C.USERALREADYEXIST
-		
+
+		self.send['errors'],self.send['validation_rules'] = self.required_fields(serializer)
+
 		return Response(self.send)
+
+	def required_fields(self,serializer):
+
+		self.validation_rules 	 = {}
+		self.errors = {}
+
+		for key, value in  serializer.fields.items():
+			self.validation_rules[key] = value.error_messages
+
+
+		for key, value in serializer.errors.items():
+			self.errors[key] = value[0]
+
+		return self.errors,self.validation_rules
 
 
 	#Update User

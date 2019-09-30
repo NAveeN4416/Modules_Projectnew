@@ -135,6 +135,7 @@ def logout(request):
         if str(user_id) == session.get_decoded().get('_auth_user_id')
       ]
       messages.success(request,"Logged out Successfully !")
+      # print(request.current_app)
     return redirect('users:login')
 
 

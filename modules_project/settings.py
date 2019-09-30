@@ -50,7 +50,7 @@ INSTALLED_APPS = [
 REST_FRAMEWORK = {
                     'DEFAULT_AUTHENTICATION_CLASSES': [
                                                         #'rest_framework.authentication.TokenAuthentication',
-                                                        #'apis.CustomAuthentication.TokenAuthentication', # Custom Changes
+                                                        'apis.CustomAuthentication.TokenAuthentication', # Custom Changes
                                                       ]
                 }
 
@@ -150,7 +150,9 @@ MEDIA_ROOT = os.path.join(BASE_DIR,'media')
 #Redirecting Urls
 LOGIN_REDIRECT_URL  = '/users/dashboard/'
 LOGOUT_REDIRECT_URL = '/users/login/'
+LOGIN_URL           = '/users/login/'
 ADMIN_REDIRECT_URL  = '/dashboard/index/'
+ADMIN_URL           = '/dashboard/index/'
 
 
 

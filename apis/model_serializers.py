@@ -12,12 +12,14 @@ class UserSerializer(serializers.Serializer):
 	last_name    = serializers.CharField(max_length=150)
 	email        = serializers.EmailField(max_length=254)
 	password     = serializers.CharField(max_length=254)
-	is_staff     = serializers.BooleanField()
-	is_active    = serializers.BooleanField()
-	date_joined  = serializers.DateTimeField(format="%d, %b %Y")
+	is_staff     = serializers.HiddenField(default=False)
+	is_active    = serializers.HiddenField(default=False)
+	date_joined  = serializers.DateTimeField(required=False,read_only=True,format="%d, %b %Y")
+
 
 	def create(self, validated_data):
 		return User.objects.create_user(**validated_data)
+
 
 	def update(self, instance, validated_data):
 		instance.username   = validated_data.get('email',instance.email)

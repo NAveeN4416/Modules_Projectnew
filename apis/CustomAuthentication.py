@@ -64,15 +64,21 @@ class TokenAuthentication(BaseAuthentication):
         auth = get_authorization_header(request).split()
 
         if not auth or auth[0].lower() != self.keyword.lower().encode():
-            #return None
+            return None
+            self.send['status'] = '2'
+            self.send['status_code'] = '401'
             self.send['message'] = 'Please Login !'
             raise exceptions.AuthenticationFailed(self.send)
 
         if len(auth) == 1:
+            self.send['status'] = '2'
+            self.send['status_code'] = '401'
             self.send['message'] = 'Invalid token header. No credentials provided.' 
             msg = _('Invalid token header. No credentials provided.')
             raise exceptions.AuthenticationFailed(self.send)
         elif len(auth) > 2:
+            self.send['status'] = '2'
+            self.send['status_code'] = '401'
             self.send['message'] = 'Invalid token header. Token string should not contain spaces.' 
             msg = _('Invalid token header. Token string should not contain spaces.')
             raise exceptions.AuthenticationFailed(self.send)
@@ -80,6 +86,8 @@ class TokenAuthentication(BaseAuthentication):
         try:
             token = auth[1].decode()
         except UnicodeError:
+            self.send['status'] = '2'
+            self.send['status_code'] = '401'
             send['message'] = 'Invalid token.'
             msg = _('Invalid token header. Token string should not contain invalid characters.')
             raise exceptions.AuthenticationFailed(msg)
@@ -92,11 +100,14 @@ class TokenAuthentication(BaseAuthentication):
         try:
             token = model.objects.select_related('user').get(key=key)
         except model.DoesNotExist:
-            self.send['message'] = 'Invalid token.'
+            self.send['status'] = '2'
+            self.send['status_code'] = '401'
+            self.send['message'] = 'Session expired! Please login again'
             raise exceptions.AuthenticationFailed(self.send)
             #raise exceptions.AuthenticationFailed(_('Invalid token.'))
 
         if not token.user.is_active:
+            self.send['status_code'] = '401'
             self.send['message'] = 'User inactive or deleted.'
             raise exceptions.AuthenticationFailed(self.send)
 
