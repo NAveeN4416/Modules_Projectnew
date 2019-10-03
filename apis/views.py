@@ -317,7 +317,8 @@ class CategoryViewSet(viewsets.ModelViewSet):
 		self.send['message'] = "Data Not found!"
 		self.send['data']    = {}
 
-	def list(self,request):
+
+	def list(self,request,format="json"):
 
 		category_serializer = CategorySerializer(self.queryset,many=True)
 

@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 
 
-#Categoreis Manager
+#Categories Manager
 
 class CategoriesManager(models.Manager):
 
@@ -42,7 +42,7 @@ class SubCategories(models.Model):
 	updated_at   = models.DateTimeField(auto_now=True)
 
 	def __str__(self):
-		return '{}'.format(self.sub_category_name)
+		return '{}'.format(self.sub_category)
 
 
 class Products(models.Model):

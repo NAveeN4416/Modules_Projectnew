@@ -22,7 +22,7 @@ from django.contrib.sites.shortcuts import get_current_site
 from django.core.mail import EmailMessage
 from django.db.models import Q
 from django.conf import settings
-
+from django.urls import reverse
 from django.db import IntegrityError, transaction, DatabaseError
 
 from core_modules.decors import Set_RequestObject, Check_Login, CheckUser
@@ -93,7 +93,7 @@ def register(request):
 
 				send_mail(request,user.id,'Django Account Verification','activate_account')
 				messages.info(request,"Please login here !")
-				return redirect('users:login',)
+				return redirect('users:login')
 	else:
 		form = UserRegistration()
 
