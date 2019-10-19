@@ -60,6 +60,30 @@ def forms_demo(request):
 	return response
 
 
+def download_image(request):
+
+	user = UserDetails.objects.get(pk=27)
+
+	try:
+		file_name = os.path.basename(user.image.name)
+		response = HttpResponse(user.image, content_type='image/png')
+		response['Content-Disposition'] = f'attachment; filename={file_name}'
+		return response
+	except ValueError :
+		return HttpResponse("Sorry, File not found !")
+
+
+	# import eyed3
+
+	# audiofile = eyed3.load('example.mp3')
+	# if (audiofile.tag == None):
+	#     audiofile.initTag()
+
+	# audiofile.tag.images.set(3, open('cover.jpg','rb').read(), 'image/jpeg')
+
+	# audiofile.tag.save()
+
+
 #Registration
 @transaction.atomic
 def register(request):
@@ -140,9 +164,10 @@ def logout(request):
 
 
 def users_list(request):
-	users_list = User.objects.all()
-	return render(request,'users_list.html',{'users':users_list})
-
+	if request.user.has_perm('products.add_categories'):
+		users_list = User.objects.all()
+		return render(request,'users_list.html',{'users':users_list})
+	return HttpResponse("You can't these details !")
 
 
 #Dashboard

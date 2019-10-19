@@ -64,7 +64,7 @@ class TokenAuthentication(BaseAuthentication):
         auth = get_authorization_header(request).split()
 
         if not auth or auth[0].lower() != self.keyword.lower().encode():
-            return None
+            #return None
             self.send['status'] = '2'
             self.send['status_code'] = '401'
             self.send['message'] = 'Please Login !'

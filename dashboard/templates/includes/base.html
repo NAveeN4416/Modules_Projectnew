@@ -42,36 +42,32 @@
     <!--color css-->
     <style type="text/css">
         
-        .sidebar-menu>li>a .inactive-arrow {
-    float: right;
-    position: relative;
-    top: 5px;
-}
-.active-arrow{
-display: none !important;
-    float: right;
-    position: relative;
-    top: 5px;
+        .sidebar-menu>li>a .inactive-arrow 
+        {
+            float: right;
+            position: relative;
+            top: 5px;
+        }
+        .active-arrow
+        {
+            display: none !important;
+            float: right;
+            position: relative;
+            top: 5px;
 
-}
-li.dropdown.active .active-arrow  {
-    display: block !important;
+        }
+        li.dropdown.active .active-arrow  {
+            display: block !important;
 
-    transition: all ease-in-out .5s;
-      -webkit-transition: display 2s; 
-    transition: display 2s;
-}
-li.dropdown.active .inactive-arrow{
-    display: none !important;
-}
+            transition: all ease-in-out .5s;
+              -webkit-transition: display 2s; 
+            transition: display 2s;
+        }
+        li.dropdown.active .inactive-arrow{
+            display: none !important;
+        }
     
-
-.main-header-top .logo 
-{
-    background-color: white;
-}
-
-</style>
+    </style>
 </head>
 
 <body class="sidebar-mini fixed">
@@ -129,11 +125,11 @@ li.dropdown.active .inactive-arrow{
                 <ul class="sidebar-menu">
                     <li class="{% if data.page_name == 'dashboard' %}  active {% endif %}">
                         <a class="waves-effect waves-dark" href="{% url 'dashboard:index' %}" >
-                        <i class="fa fa-tachometer"></i><span> Dashboard</span></a>
+                        <i class="fa fa-tachometer"></i><span>Dashboard</span></a>
                     </li>
                     <li class="{% if data.page_name == 'categories' %}  active {% endif %}">
                         <a class="waves-effect waves-dark" href="{% url 'products:categories_list' %}" >
-                        <i class="fa fa-tachometer"></i><span> Categories</span></a>
+                        <i class="fa fa-tachometer"></i><span>Categories</span></a>
                     </li>
                     <li class="{% if data.page_name == 'users' %}  active {% endif %}">
                         <a class="waves-effect waves-dark" href="#" >
@@ -141,7 +137,7 @@ li.dropdown.active .inactive-arrow{
                     </li>
                     <li class="{% if data.page_name == 'sp' %}  active {% endif %}">
                         <a href="javascript:"><i class="fa fa-users"></i><span>Service Providers</span><i class="icon-arrow-down"></i></a>
-                        <ul class="treeview-menu"> 
+                        <ul class="treeview-menu">
                             <li class="<?php echo (@$subpage_name=='active')?'active':'';?>">
                                 <a class="waves-effect waves-dark" href="#" >
                             <i class="fa fa-toggle-on"></i><span>Approved</span></a>

@@ -31,21 +31,21 @@ class UserSerializer(serializers.Serializer):
 		return instance
 
 
-# Serializers define the API representation.
-class UserMSerializer(serializers.ModelSerializer):
-
-	date_joined = serializers.DateTimeField(format="%d, %b %Y")
-
-	class Meta:
-	 	model  = User
-	 	fields = ['username','first_name','last_name','email','date_joined'] #'__all__' #
-
-
 class UserdetailsSerializer(serializers.ModelSerializer):
 
 	class Meta:
 		model  = UserDetails
 		fields = ['image','phone_number','address','device_type','device_token','role']
+
+# Serializers define the API representation.
+class UserMSerializer(serializers.ModelSerializer):
+
+	user_details = UserdetailsSerializer(read_only=True)
+	date_joined = serializers.DateTimeField(format="%d, %b %Y")
+
+	class Meta:
+	 	model  = User
+	 	fields = ['id','username','first_name','last_name','email','date_joined','user_details'] #'__all__' #
 
 
 class ProductsSerializer(serializers.ModelSerializer):

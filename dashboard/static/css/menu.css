@@ -29,8 +29,7 @@ body {
     content: initial;
 }
 .main-header-top {
-         
-	 background: #7ABAF296;
+	background: #222d32;
 }
 .nav-level{
     padding: 10px 15px !important;
@@ -58,8 +57,8 @@ body {
     margin-top:0px;
 }
 .main-header-top .navbar .top-nav>li>a {
-    opacity: 0.9;
-    color: #fff
+    opacity: 1;
+    color: white;
 }
 .main-header-top .navbar .top-nav>li>a:hover,
 .main-header-top .navbar .top-nav>li>a:active,
@@ -91,7 +90,7 @@ body {
     opacity: 1;
 }
 .main-header-top .logo {
-    color: #fff;
+    color: #222d32;;
     border-bottom: 0 solid transparent
 }
 .main-header-top .logo i{
@@ -112,9 +111,19 @@ body {
 
 .sidebar-menu>li.active>a {
     color: #fff;
-    font-weight: 600;
-    background: #7ABAF2;
+    font-weight: 300;
+    opacity: 1;
+    font-style: italic;
+    background: #222d32;
 }
+
+.sidebar-menu>li.active{
+
+    border-left: 4px solid #3c8dbc;
+    /* border-radius: 2px; */
+    /* transition: all 1s ease-in-out; */
+}
+
 .sidebar-menu .treeview-menu {
     margin: 0 1px;
     background: #fff;
@@ -241,7 +250,7 @@ header .wrapper {
     max-height: 50px;
     border-radius: 0;
     padding: 0;
-       background: #7ABAF2;
+    background: #3c8dbc;
 	
 	//background: -webkit-linear-gradient(65deg, #909292 0%, #00B0D4 100%);
 }
@@ -376,7 +385,7 @@ header .wrapper {
     position: absolute;
     top: 0;
     left: 0;
-    background:#fff;
+    background:#222d32;
     padding-top: 50px;
     min-height: 100vh;
     width: 230px;
@@ -436,6 +445,7 @@ header .wrapper {
     content: " ";
     display: table;
     clear: both
+    color:#b8c7ce;
 }
 .sidebar .user-panel>.image>img {
     width: 100%;
@@ -476,20 +486,23 @@ header .wrapper {
 }
 .sidebar-menu>li>a {
     padding: 12px 5px 12px 15px;
+    color: #9b9b9b;
     display: block;
     position: relative;
     font-size: 14px;
-    background-color: #fff;
-	    transition: all .3s ease-in-out 0s;
+    background-color: #222d32;
+	transition: all .3s ease-in-out 0s;
    
 }
 .sidebar-menu>li:hover > a {
     position: relative;
-    padding-left: 35px;
+    /* padding-left: 30px; */
     transition: all .3s ease-in-out 0s;
+    color: white;
 }
 .sidebar-menu>li>a:hover{
-	    background: #7ABAF2;
+	background: #2e383e;
+    opacity: 1
     color: #fff;
 }
 .sidebar-menu>li>a>i {

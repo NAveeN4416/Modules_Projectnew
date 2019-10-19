@@ -40,6 +40,7 @@ INSTALLED_APPS = [
                     'dashboard',
                     'apis',
                     'products',
+                    'music',
                     'rest_framework',
                     'rest_framework.authtoken',
                     'django_cleanup',
@@ -50,7 +51,7 @@ INSTALLED_APPS = [
 REST_FRAMEWORK = {
                     'DEFAULT_AUTHENTICATION_CLASSES': [
                                                         #'rest_framework.authentication.TokenAuthentication',
-                                                        'apis.CustomAuthentication.TokenAuthentication', # Custom Changes
+                                                        #'apis.CustomAuthentication.TokenAuthentication', # Custom Changes
                                                       ]
                 }
 

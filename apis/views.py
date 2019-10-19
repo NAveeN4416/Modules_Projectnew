@@ -62,11 +62,13 @@ class UserAuthViewSet(viewsets.ModelViewSet):
 
 	queryset = User.objects.all()
 	serializer_class = UserMSerializer
+	authentication_classes = [TokenAuth]
 
 	#Tracking User Authentication
 	report_name = f"{log_path}/Authentication"
 	Log = Initiate_logging(report_name,10)
 	authlog = Log.Track()
+
 
 	#===Constructor============================
 	def __init__(self,*args,**kwargs):
@@ -77,12 +79,9 @@ class UserAuthViewSet(viewsets.ModelViewSet):
 		self.send['message'] = "User Not found!"
 
 
+
 	@action(detail=False,methods=['post'],url_name="user_login")
 	def user_login(self,request):
-
-		if request.auth:
-			self.send['message'] = f"You have already LoggedIn Mr.{request.user}"
-			return Response(self.send)
 
 		email    = request.POST.get('email',None)
 		mobile   = request.POST.get('mobile',None)
@@ -109,7 +108,7 @@ class UserAuthViewSet(viewsets.ModelViewSet):
 	@action(detail=False,methods=['get'],url_name="user_logout")
 	def user_logout(self,request):
 
-		if request.auth:
+		if request.user.is_authenticated:
 			user = request.user
 			request.user.auth_token.delete()
 			self.authlog.info(f"LoggedOut || {user} !")
@@ -121,8 +120,10 @@ class UserAuthViewSet(viewsets.ModelViewSet):
 
 class UserMViewSet(viewsets.ModelViewSet):
 
-	queryset         	   = User.objects.all()
-	serializer_class 	   = UserMSerializer
+	#queryset          = User.objects.all()
+	serializer_class  = UserMSerializer
+	#lookip_field      = 'pk'
+	multiple_lookup_fields  = ['username','email']
 
 	authentication_classes = [TokenAuth]
 	#permission_classes     = [IsAuthenticated]
@@ -135,60 +136,79 @@ class UserMViewSet(viewsets.ModelViewSet):
 	tracking_user = Log.Track()
 
 
+
 	#===Constructor============================
 	def __init__(self,*args,**kwargs):
 		super().__init__(*args,**kwargs)
+
 		self.send    = {}
 		self.details = {}
 		self.request = None
-		self.single_record  = False
 
 		self.send['status']  = '0'
 		self.send['message'] = "User Not found!"
 		self.send['data']    = {}
 
 	
-	#==Inherited Methods (Request Recievers)==
+	def get_object(self):
+	    queryset = self.get_queryset()
+	    filter = {}
+	    for field in self.kwargs:
+	        filter[field] = self.kwargs[field]
 
+	    obj = get_object_or_404(queryset, **filter)
+	    self.check_object_permissions(self.request, obj)
+	    return obj
+
+
+	def get_queryset(self):
+		return User.objects.all()
+
+	#==Inherited Methods (Request Recievers)==
 	#Get All Users
-	def list(self,request):
-		if self.ProcessUsers():
+	def list(self,request,*args,**kwargs):
+
+		users = UserMSerializer(self.get_queryset(),many=True)
+
+		if self.ProcessUsers(users):
 			users = self.userslist
 			self.send['status']  = '1'
 			self.send['message'] = "success"
 			self.send['data']    = users
 			return Response(self.send)
 
-		self.send['message'] = "Please login !"
+		self.send['message'] = "Data not found !"
 
 		return Response(self.send)
 
 
+	def ProcessUsers(self,users):
+
+		if users.data:
+			self.userslist = users.data
+			return True
+		return False
+
+
 	#Get Single User
 	def retrieve(self,request,pk=0):
-		self.single_record = True
 		try:
 			users = User.objects.get(pk=pk)
+			users = UserMSerializer(users)
 		except User.DoesNotExist:
 			pass
 		else:
-			self.queryset = users
-			if self.ProcessUsers():
+			if self.ProcessUsers(users):
 				self.send['status']  = '1'
 				self.send['message'] = "success"
 				self.send['data']    = self.userslist
-
-			#Append user profile/details
-			if self.ProcessUserDetails():
-				details  = self.details
-				self.send['data']['details'] = details
 
 		return Response(self.send)
 
 
 	#Delete User
 	def destroy(self,request,pk=0):
-		self.tracking_user.info(f"{request.user} ==> {pk} || Deleted!")
+		self.tracking_user.info(f"{request.user} || Record-{pk} || Deleted!")
 		return Response({'message':"You are trying to delete record id {}".format(pk)})
 
 
@@ -235,11 +255,13 @@ class UserMViewSet(viewsets.ModelViewSet):
 
 	#Update User
 	def update(self,request,pk=0):
+		self.tracking_user.info(f"{request.user} || Record-{pk} || Updated!")
 		return Response({'message':'Updating Checking'})
 
 
 	#Partial Update User
 	def partial_update(self, request, pk=0):
+		self.tracking_user.info(f"{request.user} || Record-{pk} || Partial Update!")
 		return Response({'message':'Partially Update Checking'})
 
 
@@ -258,33 +280,6 @@ class UserMViewSet(viewsets.ModelViewSet):
 
 		return Response(self.send)
 
-
-
-	#===New Methods====
-	def ProcessUserDetails(self):
-
-		details  = UserDetails.objects.get(user=self.queryset)
-		details  = UserdetailsSerializer(details)
-
-		if details:
-			self.details = details.data
-			return True
-		return False
-
-
-	def ProcessUsers(self):
-
-		users  = self.queryset
-
-		if self.single_record:
-			users = UserSerializer(users)
-		else:
-			users = UserSerializer(users,many=True)
-
-		if users.data:
-			self.userslist = users.data
-			return True
-		return False
 
 
 #------------------------------------- Categgory View Set -------------------------------------------

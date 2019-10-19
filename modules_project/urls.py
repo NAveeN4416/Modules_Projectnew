@@ -21,8 +21,10 @@ from django.conf             import settings
 from django.conf.urls.static import static
 from apis.views import UserViewSet, UserMViewSet, UserAuthViewSet
 from apis.urls import router
+from rest_framework.authtoken import views
 
 urlpatterns = [ url(r'^apis/', include((router.urls,"apis"),namespace="apis"))]
+urlpatterns += [ url(r'^apis-authtoken/', views.obtain_auth_token)]
 
 
 #For Web
@@ -30,6 +32,7 @@ urlpatterns += [
                 url(r'^admin/', admin.site.urls),
                 url(r'^users/', include("users.urls", namespace="users")),
 
+                url(r'^music/', include("music.urls", namespace="music")),
                 url(r'^dashboard/', include("dashboard.urls", namespace="dashboard")),
                 url(r'^dashboard/products/', include("products.urls", namespace="products")),
 			  ]

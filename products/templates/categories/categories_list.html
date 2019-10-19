@@ -43,9 +43,24 @@
                     <td><img src="{{ category.image.url }}" height="50"></td>
                     <td><span class="badge badge-success">{{ category.status|status }}</span></td>
                     <td>
-                      <a href="{% url 'products:view_category' category.id %}"><button class="btn btn-sm btn-success"><i class="fa fa-eye" aria-hidden="true"></i> View Details</button></a><br><br>
-                      <a href="{% url 'products:edit_category' category.id %}"><button class="btn btn-sm btn-warning"><i class="fa fa-edit" aria-hidden="true"></i>Edit</button></a>
-                       <a href="{% url 'products:delete_category' category.id %}"><button class="btn btn-sm btn-danger"><i class="fa fa-trash" aria-hidden="true"></i>Delete</button></a>
+                      <div class="btn-group">
+                        <button type="button" class="btn btn-sm btn-lg btn-info dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                          Action
+                        </button>
+                        <div class="dropdown-menu" style="background: #d6dadc">
+                          <a class="dropdown-item" href="{% url 'products:view_category' category.id %}">
+                            <i class="fa fa-eye" aria-hidden="true"></i> View
+                          </a>
+                          <a class="dropdown-item" href="{% url 'products:edit_category' category.id %}">
+                            <i class="fa fa-edit" aria-hidden="true"></i> Edit
+                          </a>
+                          <a class="dropdown-item" href="{% url 'products:delete_category' category.id %}">
+                            <i class="fa fa-trash" aria-hidden="true"></i> Delete
+                          </a>
+                          <!-- <div class="dropdown-divider"></div>
+                          <a class="dropdown-item" href="#">Separated link</a> -->
+                        </div>
+                      </div>
                     </td>
                 </tr>
               {% endfor %}
