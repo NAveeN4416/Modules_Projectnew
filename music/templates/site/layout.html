@@ -1,0 +1,191 @@
+<!--Author: W3layouts
+Author URL: http://w3layouts.com
+License: Creative Commons Attribution 3.0 Unported
+License URL: http://creativecommons.org/licenses/by/3.0/
+-->
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="zxx">
+
+<head>
+	<title>Melodys</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta charset="utf-8">
+	<meta name="keywords" content="Medley Responsive web template, Bootstrap Web Templates, Flat Web Templates, Android Compatible web template, 
+	SmartPhone Compatible web template, free WebDesigns for Nokia, Samsung, LG, Sony Ericsson, Motorola web design" />
+	<script>
+		addEventListener("load", function () {
+			setTimeout(hideURLbar, 0);
+		}, false);
+
+		function hideURLbar() {
+			window.scrollTo(0, 1);
+		}
+	</script>
+	<!-- Custom Theme files -->
+	<link href="{% static 'player/css/bootstrap.css' %}" type="text/css" rel="stylesheet" media="all">
+	<link href="{% static 'player/css/style.css' %}" type="text/css" rel="stylesheet" media="all">
+	<link href="{% static 'player/css/fontawesome-all.css' %}" rel="stylesheet">
+
+	<!-- font-awesome icons -->
+	<!-- //Custom Theme files -->
+	<!-- web-fonts -->
+
+	<link href="//fonts.googleapis.com/css?family=Molengo" rel="stylesheet">
+	<link href="//fonts.googleapis.com/css?family=Arimo:400,400i,700,700i" rel="stylesheet">
+	<!-- //web-fonts -->
+</head>
+
+<body id="page-top" data-spy="scroll" data-target=".navbar-fixed-top">
+
+	{% block content %}
+	{% endblock content %}
+
+
+	<!-- //footer -->
+	<div class="cpy-right-agile-w3ls">
+		<p>© 2018 Melodys. All rights reserved | Design by
+			<a href="http://w3layouts.com"> Melodys.</a>
+		</p>
+	</div>
+	<!-- js -->
+	<script src="{% static 'player/js/jquery-2.2.3.min.js' %}"></script>
+	<!-- //js -->
+	<script type="text/javascript" src="{% static 'player/js/all.js' %}"></script>
+
+	<!--search jQuery-->
+	<script src="{% static 'player/js/search.js' %}"></script>
+	<!--search jQuery-->
+	<!-- Scrolling Nav JavaScript -->
+	<script src="{% static 'player/js/scroll_menu.js' %}"></script>
+	<!-- //fixed-scroll-nav-js -->
+
+	<script>
+		$(".hover").mouseleave(
+			function () {
+				$(this).removeClass("hover");
+			}
+		);
+	</script>
+	<!--//scripts-->
+	<!-- js for portfolio lightbox -->
+	<script src="{% static 'player/js/jquery.chocolat.js' %}"></script>
+	<link rel="stylesheet " href="{% static 'player/css/chocolat.css' %}" type="text/css " media="screen">
+	<!--light-box-files -->
+	<script type="text/javascript ">
+		$(function () {
+			$('.portfolio-grids a').Chocolat();
+		});
+	</script>
+	<!-- /js for portfolio lightbox -->
+
+	<!-- start-smooth-scrolling -->
+	<script src="{% static 'player/js/move-top.js' %}"></script>
+	<script src="{% static 'player/js/easing.js' %}"></script>
+	<script>
+		jQuery(document).ready(function ($) {
+			$(".scroll").click(function (event) {
+				event.preventDefault();
+
+				$('html,body').animate({
+					scrollTop: $(this.hash).offset().top
+				}, 1000);
+			});
+		});
+	</script>
+	<!-- //end-smooth-scrolling -->
+	<!-- Time -->
+	<link href="{% static 'player/css/wickedpicker.css' %}" rel="stylesheet" type='text/css' media="all" />
+
+	<script type="text/javascript" src="{% static 'player/js/wickedpicker.js' %}"></script>
+	<script type="text/javascript">
+		$('.timepicker').wickedpicker({
+			twentyFour: false
+		});
+	</script>
+	<!-- //Time -->
+	<!-- Calendar -->
+	<link rel="stylesheet" href="{% static 'player/css/jquery-ui.css' %}" />
+	<script src="{% static 'player/js/jquery-ui.js' %}"></script>
+	<script>
+		$(function () {
+			$("#datepicker,#datepicker1,#datepicker2,#datepicker3").datepicker();
+		});
+	</script>
+	<!-- //Calendar -->
+<!-- js -->
+<!-- <script type="text/javascript" src="{% static 'player/js/simplyCountdown.js"></script>
+<link href="{% static 'player/css/simplyCountdown.css" rel='stylesheet' type='text/css' />
+<script>
+	var d = new Date();
+	simplyCountdown('simply-countdown', {
+		year: d.getFullYear(),
+		month: d.getMonth() + 2,
+		day: 25
+	});
+	simplyCountdown('simply-countdown-custom', {
+		year: d.getFullYear(),
+		month: d.getMonth() + 2,
+		day: 25
+	});
+	$('#simply-countdown-losange').simplyCountdown({
+		year: d.getFullYear(),
+		month: d.getMonth() + 2,
+		day: 25
+	});
+</script> -->
+<!--js-->
+	<!-- player -->
+	<link rel="stylesheet" href="{% static 'player/css/plyr.css' %}" />
+	<script src="{% static 'player/js/html5media.min.js' %}"></script>
+	<script src="{% static 'player/js/plyr.js' %}"></script>
+	<!-- <script src="{% static 'player/js/index-player.js' %}"></script> -->
+	<!--// player -->
+	<!-- dropdown nav -->
+	<script>
+		$(document).ready(function () {
+			$(".dropdown").hover(
+				function () {
+					$('.dropdown-menu', this).stop(true, true).slideDown("fast");
+					$(this).toggleClass('open');
+				},
+				function () {
+					$('.dropdown-menu', this).stop(true, true).slideUp("fast");
+					$(this).toggleClass('open');
+				}
+			);
+		});
+	</script>
+	<!-- //dropdown nav -->
+	<!-- smooth-scrolling-of-move-up -->
+	<script>
+		$(document).ready(function () {
+			/*
+			var defaults = {
+			    containerID: 'toTop', // fading element id
+			    containerHoverID: 'toTopHover', // fading element hover id
+			    scrollSpeed: 1200,
+			    easingType: 'linear' 
+			};
+			*/
+
+			$().UItoTop({
+				easingType: 'easeOutQuart'
+			});
+
+		});
+	</script>
+
+	<!-- //smooth-scrolling-of-move-up -->
+	<script src="{% static 'player/js/bootstrap.js' %}"></script>
+	<a href="#" id="toTop" style="display: block;">
+		<span id="toTopHover" style="opacity: 1;"> </span>
+	</a>
+
+	{% block script %}
+	{% endblock script %}
+
+</body>
+
+</html>

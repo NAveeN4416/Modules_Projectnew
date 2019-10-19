@@ -1,0 +1,241 @@
+{% extends 'site/layout.html' %}
+
+{% block content %}
+	<div id="home">
+		<!-- header -->
+		<!-- Navigation -->
+		<nav class="navbar navbar-default navbar-fixed-top">
+			<div class="main-nav-agile-w3layouts">
+				<!-- <div class="search">
+					<form action="#" method="post">
+						<input class="serch" type="search" name="serch" placeholder="Search here..." required="">
+						<button class="btn1">
+							<i class="fas fa-search"></i>
+						</button>
+						<div class="clearfix"> </div>
+					</form>
+				</div> -->
+				<div class="navbar-header page-scroll">
+					<!-- <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+						<span class="sr-only">Chronicle</span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+					</button> -->
+					<div class="logo">
+						<h1>
+							<a class="navbar-brand" href="index.html">
+								<i class="fas fa-headphones"></i> Medley</a>
+						</h1>
+					</div>
+				</div>
+				<!-- Collect the nav links, forms, and other content for toggling -->
+				<!-- <div class="collapse navbar-collapse navbar-ex1-collapse nav-right">
+					<ul class="nav navbar-nav navbar-right cl-effect-15">
+						Hidden li included to remove active class from about link when scrolled up past about section
+						<li class="hidden">
+							<a class="page-scroll" href="#page-top"></a>
+						</li>
+						<li>
+							<a class="page-scroll" href="#home">Home</a>
+						</li>
+						<li>
+							<a class="page-scroll" href="#about">about</a>
+						</li>
+						<li class="dropdown">
+							<a href="#" class="dropdown-toggle effect-3" data-toggle="dropdown">Drop Down
+								<b class="caret"></b>
+							</a>
+							<ul class="dropdown-menu">
+								<li>
+									<a href="#gallery" class="scroll">Gallery</a>
+								</li>
+								<li>
+									<a href="#album" class="scroll">Albums</a>
+								</li>
+								<li>
+									<a href="#coming" class="scroll">Coming soon</a>
+								</li>
+								<li>
+									<a href="#team" class="scroll">Artists</a>
+								</li>
+				
+							</ul>
+						</li>
+						<li>
+							<a class="page-scroll" href="#testimonials">reviews</a>
+						</li>
+						<li>
+							<a class="page-scroll" href="#contact">Contact</a>
+						</li>
+				
+					</ul>
+				</div> -->
+				<!-- /.navbar-collapse -->
+				<div class="clearfix"></div>
+			</div>
+			<!-- /.container -->
+		</nav>
+	</div>
+	<!-- banner -->
+
+
+	<!--/works-->
+	<div class="works" id="album">
+		{% csrf_token %}
+		<div class="container">
+			<h3 class="tittle_w3ls cen">{{album.name|upper}}</h3>
+			<p><img src="{{album.image.url}}" height="180" width="160"></p>
+			<div class="inner_sec_info_agile-w3ls">
+				<div class="column add-bottom">
+					<div id="mainwrap">
+						<div id="nowPlay">
+							<span class="left" id="npAction"></span>
+							<span class="right" id="npTitle"></span>
+						</div>
+						<div id="audiowrap">
+							<div id="audio0">
+								<audio preload id="audio1" controls="controls">Your browser does not support HTML5 Audio!</audio>
+							</div>
+							<div id="tracks">
+								<a id="btnPrev" title="<< Previous"><i class="fa fa-arrow-left" aria-hidden="true"></i></a>
+								<a id="btnNext" title="Next >>"><i class="fa fa-arrow-right" aria-hidden="true"></i></a>
+							</div>
+						</div>
+						<div id="plwrap">
+							<ul id="plList"></ul>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!--/works-->
+	<!--/coming-->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+{% endblock content %}
+
+
+{% block script %}
+
+<script type="text/javascript">
+
+$(document).ready(function(){
+
+	var tracks = " No data found !";
+
+	$.ajax({                
+	        url         : '{% url "music:get_track" %}',
+	        type        : "POST",
+	        data        : {'csrfmiddlewaretoken' : $("input[name=csrfmiddlewaretoken]").val(), 'album_id':{{album_id}}},
+	        error       : function(request,response)
+	                      {
+	                        console.log(request);
+	                      },                  
+	        success      : function(data){
+	                          tracks = data ;
+	                          //console.log(tracks);
+	                        }
+        });
+
+	setTimeout(function()
+    {
+	    var supportsAudio = !!document.createElement('audio').canPlayType;
+	    if (supportsAudio) {
+
+	        var index 		= 0,
+	            playing 	= false,
+	            mediaPath 	= 'https://archive.org/download/mythium/',
+	            mediaPath 	= 'http://localhost:8000',
+	            extension 	= '';
+
+	            var buildPlaylist = $.each(tracks, function(key, value) {
+	                var trackNumber = value.id,
+	                    trackName = value.name,
+	                    trackLength = value.length;
+	                /*if (trackNumber.toString().length === 1) {
+	                    trackNumber = '0' + trackNumber;
+	                } else {
+	                    trackNumber = '' + trackNumber;
+	                }*/
+
+	                $('#plList').append('<li><div class="plItem"><div class="plNum">' + trackNumber + '.</div><div class="plTitle">' + trackName + '</div><div class="plLength">' + trackLength + '</div></div></li>');
+	            }),
+	            trackCount = tracks.length,
+	            npAction = $('#npAction'),
+	            npTitle = $('#npTitle'),
+	            audio = $('#audio1').bind('play', function () {
+	                playing = true;
+	                npAction.text('Now Playing...');
+	            }).bind('pause', function () {
+	                playing = false;
+	                npAction.text('Paused');
+	            }).bind('ended', function () {
+	                npAction.text('Paused');
+	                if ((index + 1) < trackCount) {
+	                    index++;
+	                    loadTrack(index);
+	                    audio.play();
+	                } else {
+	                    audio.pause();
+	                    index = 0;
+	                    loadTrack(index);
+	                }
+	            }).get(0),
+	            btnPrev = $('#btnPrev').click(function () {
+	                if ((index - 1) > -1) {
+	                    index--;
+	                    loadTrack(index);
+	                    if (playing) {
+	                        audio.play();
+	                    }
+	                } else {
+	                    audio.pause();
+	                    index = 0;
+	                    loadTrack(index);
+	                }
+	            }),
+	            btnNext = $('#btnNext').click(function () {
+	                if ((index + 1) < trackCount) {
+	                    index++;
+	                    loadTrack(index);
+	                    if (playing) {
+	                        audio.play();
+	                    }
+	                } else {
+	                    audio.pause();
+	                    index = 0;
+	                    loadTrack(index);
+	                }
+	            }),
+	            li = $('#plList li').click(function () {
+	                var id = parseInt($(this).index());
+	                if (id !== index) {
+	                    playTrack(id);
+	                }
+	            }),
+	            loadTrack = function (id) {
+	                $('.plSel').removeClass('plSel');
+	                $('#plList li:eq(' + id + ')').addClass('plSel');
+	                npTitle.text(tracks[id].name);
+	                index = id;
+	                audio.src = mediaPath + tracks[id].file + extension;
+	            },
+	            playTrack = function (id) {
+	                loadTrack(id);
+	                audio.play();
+	            };
+	        extension = audio.canPlayType('audio/mpeg') ? '' : audio.canPlayType('audio/ogg') ? '.ogg' : '';
+	        loadTrack(index);
+	    }
+	}, 1000);
+}) ;
+
+//initialize plyr
+plyr.setup($('#audio1'), {});
+</script>
+
+
+{% endblock script %}
+

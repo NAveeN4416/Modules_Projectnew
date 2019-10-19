@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+
+.box {
+  transition: box-shadow .3s;
+  width: 300px;
+  height: 500px;
+  margin: 50px;
+  border-radius:10px;
+  border: 1px solid #ccc;
+  background: #fff;
+  float: left;
+  
+}
+
+div.gallery {
+  transition: box-shadow .3s;
+  margin: 5px;
+  border: 1px solid #d7d4d4;
+  width: 180px;
+  border-radius:10px;
+  border: 1px solid #ccc;
+  background: #fff;
+  cursor: pointer;
+  float: left;
+}
+
+div.gallery:hover {
+  box-shadow: 0 0 11px rgb(96, 90, 90);
+}
+
+
+
+div.gallery img {
+  width: 100%;
+  /* height: auto; */
+  max-height: 140px;
+  border-top-right-radius:5px;
+  border-top-left-radius:5px;
+}
+
+div.desc {
+  padding: 15px;
+  text-align: center;
+}
+</style>
+</head>
+<body>
+  {% for album in albums %}
+    <div class="gallery">
+      <a target="_blank" href="{% url 'music:player' album.id %}">
+        <img src="{{album.image.url}}" alt="Cinque Terre" width="600" height="400">
+      </a>
+      <div class="desc">{{album.name}}</div>
+    </div>
+  {% endfor %}
+</body>
+</html>
