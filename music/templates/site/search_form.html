@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+</head>
+<body>
+	<form accept="{% url 'music:search_movie' %" method="post">
+		{% csrf_token %}
+		<input type="text" name="movie_name">
+		<input type="submit" value="Submit">
+	</form>
+
+</body>
+</html>

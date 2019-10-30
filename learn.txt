@@ -1,0 +1,9 @@
+1. django.utils.text
+		
+	* slugify
+
+			>>>	slugify(' Joel is a slug ')
+				
+				'joel-is-a-slug'
+
+				If you want to allow Unicode characters, pass "allow_unicode=True".
