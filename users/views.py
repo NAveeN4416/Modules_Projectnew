@@ -164,7 +164,7 @@ def logout(request):
 
 
 def users_list(request):
-	if request.user.has_perm('products.add_categories'):
+	if request.user.has_perm('users.view_users'):
 		users_list = User.objects.all()
 		return render(request,'users_list.html',{'users':users_list})
 	return HttpResponse("You can't these details !")

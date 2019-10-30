@@ -74,13 +74,13 @@ class TokenAuthentication(BaseAuthentication):
             self.send['status'] = '2'
             self.send['status_code'] = '401'
             self.send['message'] = 'Invalid token header. No credentials provided.' 
-            msg = _('Invalid token header. No credentials provided.')
+            #msg = _('Invalid token header. No credentials provided.')
             raise exceptions.AuthenticationFailed(self.send)
         elif len(auth) > 2:
             self.send['status'] = '2'
             self.send['status_code'] = '401'
             self.send['message'] = 'Invalid token header. Token string should not contain spaces.' 
-            msg = _('Invalid token header. Token string should not contain spaces.')
+            #msg = _('Invalid token header. Token string should not contain spaces.')
             raise exceptions.AuthenticationFailed(self.send)
 
         try:

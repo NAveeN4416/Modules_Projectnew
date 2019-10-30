@@ -1,6 +1,6 @@
 
 
-USERALREADYEXIST    = "Username or Email already exist !"
+USERALREADYEXIST    = "Email already exist !"
 USERCREATED  		= "Account Created Successfully, Please verify your email. Thank you"
 ACTIVATED    		= "Activated Successfully :)"
 DEACTIVATED  		= "Deactivated :|"

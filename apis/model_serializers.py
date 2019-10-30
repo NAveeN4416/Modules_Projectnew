@@ -30,27 +30,64 @@ class UserSerializer(serializers.Serializer):
 		instance.save()
 		return instance
 
+	def validate_username(self,value):
+
+		if value != 'Testing10234':
+			raise serializers.ValidationError("Username should be different")
+		return value
+
 
 class UserdetailsSerializer(serializers.ModelSerializer):
 
+	#image = serializers.FileField(use_url=True)
+
 	class Meta:
 		model  = UserDetails
-		fields = ['image','phone_number','address','device_type','device_token','role']
+		fields = ['image','phone_number','address','device_type','device_token','role','user_id']
+
+
+	def create(self,validated_data):
+		user_details = UserDetails(**validated_data)
+		user_details.save()
+		return user_details
+
+
+	def update(self,instance,validated_data):
+		userdetails = UserDetails.objects.filter(user=instance.user_id)
+		userdetails.update(**validated_data)
+		return UserDetails.objects.get(user=instance.user_id)
+
+
 
 # Serializers define the API representation.
 class UserMSerializer(serializers.ModelSerializer):
 
+	#first_name   = serializers.CharField(max_length=10,required=True)
 	user_details = UserdetailsSerializer(read_only=True)
-	date_joined = serializers.DateTimeField(format="%d, %b %Y")
+	date_joined  = serializers.DateTimeField(format="%d, %b %Y")
 
 	class Meta:
 	 	model  = User
-	 	fields = ['id','username','first_name','last_name','email','date_joined','user_details'] #'__all__' #
+	 	fields = ['id','username','password','first_name','last_name','email','date_joined','user_details'] #'__all__' #
+	 	extra_kwargs = {'password': {'write_only': True}}
+
+
+	def create(self,validated_data):
+		password = validated_data.pop('password',None)
+		user = User(**validated_data)
+		user.set_password(password)
+		user.save()
+		return user
+
+	def update(self,instance,validated_data):
+		user = User.objects.filter(id=instance.pk)
+		user.update(**validated_data)
+		return User.objects.get(id=instance.pk)
 
 
 class ProductsSerializer(serializers.ModelSerializer):
 
-	user = UserMSerializer(read_only=True)
+	user = UserMSerializer()
 	created_at = serializers.DateTimeField(format="%d, %b %Y")
 
 	class Meta:
@@ -58,10 +95,11 @@ class ProductsSerializer(serializers.ModelSerializer):
 		fields = ['id','user','product_name','product_id','image','price','discount_price','quantity','address','created_at']
 
 
+
 class SubCategorySerializer(serializers.ModelSerializer):
 
 	created_at = serializers.DateTimeField(format="%d, %b %Y")
-	products   = ProductsSerializer(many=True, read_only=True)
+	products   = ProductsSerializer(many=True)
 
 	class Meta:
 		model  = SubCategories

@@ -10,7 +10,7 @@ def gender():
 class UserDetails(models.Model):
 
 	user  		   = models.OneToOneField(User,related_name="user_details", on_delete=models.CASCADE)
-	image 		   = models.FileField(upload_to='user_profilepics')
+	image 		   = models.FileField(upload_to='user_profilepics',blank=False, null=False)
 	phone_number   = models.CharField(max_length=10)
 	gender		   = models.IntegerField(default=gender)
 	address        = models.CharField(max_length=50)

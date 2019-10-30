@@ -9,4 +9,6 @@ urlpatterns = [
 				url(r'player/(?P<album_id>\d+)$',     views.player,    name="player"),
 				url(r'albums/',    views.albums, 	name="albums"),
 				url(r'get_track/', views.get_track, name="get_track"),
+
+				url(r'search_movie/', views.search_movie, name="search_movie")
 			]

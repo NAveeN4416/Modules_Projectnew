@@ -2,6 +2,11 @@ from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
 from .models import Industry, Artist, Album, Track
 
+from requests_html import HTML, HTMLSession,AsyncHTMLSession
+from threading import Thread
+import requests
+import  os
+import asyncio
 # Create your views here.
 
 def welcome(request):
@@ -39,3 +44,18 @@ def get_track(request):
 
 		data.append(d)
 	return JsonResponse(data,safe=False)
+
+
+def search_movie(request):
+
+	if request.method=='POST':
+		movie_name = request.POST.get('movie_name').replace(' ','+')
+
+		session = HTMLSession()
+		results = session.get(f"https://isongs.info/search/?q={movie_name}")
+		results.html.render()
+
+		return HttpResponse(results.html.html)
+
+	return render(request,'site/search_form.html')
+

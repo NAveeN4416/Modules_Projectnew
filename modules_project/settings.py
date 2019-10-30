@@ -95,7 +95,7 @@ WSGI_APPLICATION = 'modules_project.wsgi.application'
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
 DATABASES = {
                 'default': {
-                            'NAME'      : 'modules_project',
+                            'NAME'      : 'modules_project_new',
                             'ENGINE'    : 'django.db.backends.mysql',
                             'USER'      : 'root',
                             'PASSWORD'  : '',

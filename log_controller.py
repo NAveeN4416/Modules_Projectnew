@@ -17,17 +17,18 @@ class Initiate_logging:
 		filehandler = logging.FileHandler(self.filename)
 		filehandler.setFormatter(formatter)
 
-		# mailhandler = logging.handlers.SMTPHandler(mailhost=settings.EMAIL_HOST,
-		# 										   fromaddr='DjangoModules@gmail.com',
-		# 										   toaddrs= [settings.ADMIN_MAIL],
-		# 										   subject="INFO from DJANGO Modules",
-		# 										   credentials = (settings.EMAIL_HOST_USER,settings.EMAIL_HOST_PASSWORD),
-		# 										   secure=None
-		# 										   )
+		mailhandler = logging.handlers.SMTPHandler(mailhost=settings.EMAIL_HOST,
+												   fromaddr='DjangoModules@gmail.com',
+												   toaddrs= [settings.ADMIN_MAIL],
+												   subject="INFO from DJANGO Modules",
+												   credentials = (settings.EMAIL_HOST_USER,settings.EMAIL_HOST_PASSWORD),
+												   secure=None,
+												   timeout=4
+												   )
 
 
 		self.logger.addHandler(filehandler)
-		#self.logger.addHandler(mailhandler)
+		self.logger.addHandler(mailhandler)
 
 
 	def Track(self):

@@ -1,60 +1,102 @@
-<!DOCTYPE html>
-<html>
-<head>
+{% extends 'site/layout.html' %}
+{% load static %}
+
+{% block content %}
 <style>
-
-.box {
-  transition: box-shadow .3s;
-  width: 300px;
-  height: 500px;
-  margin: 50px;
-  border-radius:10px;
-  border: 1px solid #ccc;
-  background: #fff;
-  float: left;
-  
-}
-
-div.gallery {
-  transition: box-shadow .3s;
-  margin: 5px;
-  border: 1px solid #d7d4d4;
-  width: 180px;
-  border-radius:10px;
-  border: 1px solid #ccc;
-  background: #fff;
-  cursor: pointer;
-  float: left;
-}
-
-div.gallery:hover {
-  box-shadow: 0 0 11px rgb(96, 90, 90);
-}
-
-
-
-div.gallery img {
+ .card{
+       height:150px;
+       width:150px;
+       background: white;
+       border-radius: 0px;
+       margin : 0px 0px 20px;
+       text-align: center;
+       border-radius: 10px;
+       cursor: pointer;
+       position: relative;
+       transition: all 0.5s;
+      }
+     .card:hover {
+      box-shadow: 0 0 11px rgb(96, 90, 90);
+    }
+.album_image{
+  height: 100%;
   width: 100%;
-  /* height: auto; */
-  max-height: 140px;
-  border-top-right-radius:5px;
-  border-top-left-radius:5px;
+  border-radius: 10px;
 }
 
-div.desc {
-  padding: 15px;
-  text-align: center;
+.card:hover a.play, div.card:hover a.play {
+   display: block;
 }
+
+ .card:hover a.play {
+  background: red;
+
+}
+.card svg {
+    text-align: center;
+    margin-left: 4px;
+}
+
+.fill_path{
+  fill: white;
+}
+
+a.play {  
+    width: 50px;
+    height: 50px;
+   position: absolute;
+   top: 50%;
+   left: 50%;
+   z-index: 3;
+   background: 0;
+   -webkit-border-radius: 50%;
+   -moz-border-radius: 50%;
+   -ms-border-radius: 50%;
+   -o-border-radius: 50%;
+   border-radius: 50%;
+   transform: translate(-50%,-50%);
+   -webkit-transform: translate(-50%,-50%);
+   -moz-transform: translate(-50%,-50%);
+   -ms-transform: translate(-50%,-50%);
+   -o-transform: translate(-50%,-50%);
+   padding: 14px;
+   display: none;
+   transition: all 0.5s;
+}
+
 </style>
-</head>
-<body>
-  {% for album in albums %}
-    <div class="gallery">
-      <a target="_blank" href="{% url 'music:player' album.id %}">
-        <img src="{{album.image.url}}" alt="Cinque Terre" width="600" height="400">
-      </a>
-      <div class="desc">{{album.name}}</div>
+
+  <div id="home">
+    <nav class="navbar navbar-default navbar-fixed-top">
+      <div class="main-nav-agile-w3layouts">
+        <div class="navbar-header page-scroll">
+          <div class="logo">
+            <h1>
+              <a class="navbar-brand" href="index.html">
+                <i class="fas fa-headphones"></i> Medley</a>
+            </h1>
+          </div>
+        </div>
+        <div class="clearfix"></div>
+      </div>
+      <!-- /.container -->
+    </nav>
+  </div>
+  <!-- banner -->
+  <div class="works" id="album">
+    <div class="container">
+      <h3 class="tittle_w3ls cen">Albums</h3>
+       <div class="row">
+        {% for album in albums %}
+         <div class="col-sm-2">
+            <div class="card">
+              <a data-value="playlist8074669" data-type="play" data-pjax="" href="{% url 'music:player' album.id %}" class="play"> <svg width="20" height="24" viewBox="0 0 20 24"> <path class="fill_path" data-value="playlist8074669" data-type="play" fill-rule="evenodd" d="M0 0v24l20-12z"></path> </svg> </a>
+              <img src="{{album.image.url}}" class="album_image">
+            </div>
+         </div>
+         {% endfor %}
+       </div>
     </div>
-  {% endfor %}
-</body>
-</html>
+  </div>
+
+{% endblock content %}

@@ -1,4 +1,5 @@
 from django.db import models
+from PIL import Image
 
 
 def replace(self):
@@ -66,7 +67,19 @@ class Album(models.Model):
 	__repr__ = replace
 
 	def __str__(self):
-		return f"{self.name.title()} - Album"
+		return f"{self.name.title()} - ({self.artist})"
+
+	def save(self): 
+		super().save()
+
+		img = Image.open(self.image.path)
+
+		if img.height > 150 or img.width > 150:
+			new_img = (150, 150)
+			img.thumbnail(new_img)
+			img.save(self.image.path)  # saving image at the same path
+
+
 
 
 class Track(models.Model):
@@ -80,7 +93,7 @@ class Track(models.Model):
 	__repr__ = replace
 
 	def __str__(self):
-		return f"{self.name.title()} - Track"
+		return f"{self.name.title()} - ({self.album})"
 
 
 

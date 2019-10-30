@@ -915,7 +915,7 @@ a[id^="btn"] {
 }
 
 a[id^="btn"]:last-child {
-    margin-left: -4px;
+    margin-left: 10px;
 }
 
 a[id^="btn"]:hover,

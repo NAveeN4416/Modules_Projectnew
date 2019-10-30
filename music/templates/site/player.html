@@ -1,4 +1,5 @@
 {% extends 'site/layout.html' %}
+{% load static %}
 
 {% block content %}
 	<div id="home">
@@ -99,6 +100,7 @@
 							</div>
 							<div id="tracks">
 								<a id="btnPrev" title="<< Previous"><i class="fa fa-arrow-left" aria-hidden="true"></i></a>
+								<img src="{% static 'media/lg.equalizer-bars-loader.gif' %}" height="115" width="120">
 								<a id="btnNext" title="Next >>"><i class="fa fa-arrow-right" aria-hidden="true"></i></a>
 							</div>
 						</div>
