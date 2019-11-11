@@ -41,7 +41,7 @@ os.makedirs(log_path,exist_ok=True)
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 @Check_Login
-@Check_SuperUser
+#@Check_SuperUser
 def Index(request):
 	context = {}
 

@@ -23,6 +23,7 @@ from apis.views import UserViewSet, UserMViewSet, UserAuthViewSet
 from apis.urls import router
 from rest_framework.authtoken import views
 
+#For Api's
 urlpatterns = [ url(r'^apis/', include((router.urls,"apis"),namespace="apis"))]
 urlpatterns += [ url(r'^apis-authtoken/', views.obtain_auth_token)]
 

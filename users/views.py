@@ -141,7 +141,7 @@ def login(request):
 		if login_flag == C.AUTH_SUCCESS:
 			user = User.objects.get(username=username)
 			auth_login(request,user)
-			if user.is_superuser:
+			if user.is_staff:
 				return redirect('dashboard:index')
 			return redirect(settings.LOGIN_REDIRECT_URL)
 
@@ -293,7 +293,7 @@ def load_form_errors(form_obj):
 	for field, error in data.items():
 		errors[field] = error[0]['message']
 
-	return errors	
+	return errors
 
 
 def authenticate(request,username,password):

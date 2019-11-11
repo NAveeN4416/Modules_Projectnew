@@ -5,7 +5,7 @@ from django.conf.urls import url
 app_name = "users"
 
 urlpatterns = [
-				url(r'^download/',  		 	 views.download_image,  					name="download"),
+				url(r'^download/',  		 	 views.download_image,  			name="download"),
 				url(r'^register/',  		     views.register,  					name="register"),
 				url(r'^forms_demo/',  		     views.forms_demo,  				name="forms_demo"),
 				url(r'^login/',     		     views.login,     					name="login"),

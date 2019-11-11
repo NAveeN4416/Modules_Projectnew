@@ -42,27 +42,15 @@ log_path  = f"logs/{file_path}/"
 os.makedirs(log_path,exist_ok=True)
 
 
-def login_required():
-
-	send = {}
-	send['status']  = '0'
-	send['message'] = "Please login !"
-	send['data']    = {}
-
-	return Response(send)
-
-
 def Serialize_Method(SerializerClass,data,instance=None,many=False,partial=False):
-
 	if instance:
 		details_serializer = SerializerClass(instance,data=data,many=many,partial=partial)
 	else:
 		details_serializer = SerializerClass(data=data,many=many)
 
-	if details_serializer.is_valid():#Check opposite
+	if details_serializer.is_valid():
 		return (True, details_serializer)
 	return (False, details_serializer)
-
 
 
 def required_fields(self,serializer):
@@ -129,7 +117,7 @@ class UserAuthViewSet(viewsets.ModelViewSet):
 	def user_logout(self,request):
 		if request.user.is_authenticated:
 			user = request.user
-			request.user.auth_token.delete()
+			user.auth_token.delete()
 			self.authlog.info(f"LoggedOut || {user} !")
 			self.send['status']  = '1'
 			self.send['message'] = "Logged Out Successfully !"
@@ -144,6 +132,8 @@ class UserMViewSet(viewsets.ModelViewSet):
 	lookip_field      = 'username'
 	#multiple_lookup_fields  = ['username','email']
 
+
+
 	authentication_classes = [TokenAuth]
 	#permission_classes     = [IsAuthenticated]
 	#renderer_classes 	    = [JSONRenderer,TemplateHTMLRenderer]
@@ -155,6 +145,7 @@ class UserMViewSet(viewsets.ModelViewSet):
 	Log = Initiate_logging(report_name,10)
 	tracking_user = Log.Track()
 
+
 	#===Constructor============================
 	def __init__(self,*args,**kwargs):
 		super().__init__(*args,**kwargs)
@@ -163,9 +154,19 @@ class UserMViewSet(viewsets.ModelViewSet):
 		self.request = None
 
 		#Default
-		self.send['status']  = '0'
-		self.send['message'] = "User Not found!"
-		self.send['data']    = {}
+		self.send['status']  	 = '0'
+		#self.send['status_code'] = 200
+		self.send['message'] 	 = "User Not found!"
+		self.send['data']    	 = {}
+
+
+	def get_permissions(self):
+		permission_classes = []
+		if self.action in ['create','update','partial_update','destroy']:
+			permission_classes = [IsAuthenticated]
+
+		return [permission() for permission in permission_classes]
+
 
 
 	def get_queryset(self):
@@ -175,16 +176,14 @@ class UserMViewSet(viewsets.ModelViewSet):
 	#Get All Users
 	def list(self,request,*args,**kwargs):
 		users = UserMSerializer(self.get_queryset(),many=True)
-
 		if users.data:
 			self.send['data'] = reversed(users.data)
 			return self.Send_Response()
-
 		return self.Send_Response(message="Data not found !",status=0)
 
 
 	#Get Single User
-	def retrieve(self,request,pk=0):
+	def retrieve(self,request,pk=0,format='json'):
 		try:
 			users = self.get_queryset()
 			user  = users.get(pk=pk)
@@ -232,13 +231,13 @@ class UserMViewSet(viewsets.ModelViewSet):
 
 
 	#Update User
-	def update(self,request,pk=0):
+	def update(self,request,pk=0,format='json'):
 		self.tracking_user.info(f"{request.user} || Record-{pk} || Updated!")
 		return self.Send_Response(message = 'Update Checking !')
 
 
 	#Partial Update User
-	def partial_update(self, request, pk=0):
+	def partial_update(self, request, pk=0,format='json'):
 		user_instance = details_instance = None
 
 		try:
@@ -269,7 +268,7 @@ class UserMViewSet(viewsets.ModelViewSet):
 
 
 	#Delete User
-	def destroy(self,request,pk=0):
+	def destroy(self,request,pk=0,format='json'):
 		try:
 			users = self.get_queryset()
 			user  = users.get(pk=pk)
@@ -280,9 +279,9 @@ class UserMViewSet(viewsets.ModelViewSet):
 			return self.Send_Response(message='User Not found!',status=0)
 
 
-	#Change users status
-	@action(detail=True,methods=['get'], url_name="useractivity")
-	def useractivity(self,request,pk=0):
+	#Change user status
+	@action(detail=True, methods=['get'], url_name="useractivity")
+	def useractivity(self,request,pk=0,format='json'):
 		try:
 			user = User.objects.get(pk=pk)
 		except User.DoesNotExist:
@@ -296,13 +295,14 @@ class UserMViewSet(viewsets.ModelViewSet):
 
 
 	#////////////////Helping Methods///////////////
-	def Send_Response(self,message='Success',status=1):
-		self.send['status']  = status
-		self.send['message'] = message
+	def Send_Response(self,message='Success',status=1,status_code=200):
+		#self.send['status_code'] = status_code
+		self.send['status']  	 = status
+		self.send['message'] 	 = message
 
 		return Response(self.send)
 
-#------------------------------------- Categgory View Set -------------------------------------------
+#------------------------------------- Category View Set -------------------------------------------
 
 class CategoryViewSet(viewsets.ModelViewSet):
 
@@ -348,9 +348,6 @@ class CategoryViewSet(viewsets.ModelViewSet):
 
 	def retrieve(self,request,pk=0):
 
-		if request.auth is None:
-			return login_required()
-
 		category = Categories.objects.filter(pk=pk)
 
 		if category and category[0]:
@@ -364,21 +361,67 @@ class CategoryViewSet(viewsets.ModelViewSet):
 		return Response(self.send)
 
 
+	@action(detail=True,methods=['get'],url_name="getsubcategories")
+	def subcategories(self,request,pk=0):
+
+		try:
+			category = self.queryset.get(pk=pk)
+		except Categories.DoesNotExist:
+			return Response(self.send)
+
+		subcategories = SubCategories.objects.filter(category=category)
+		subcategory_serializer = SubCategorySerializer(subcategories,many=True)
+
+		self.send['data'] = subcategory_serializer.data
+
+		if self.send['data']:
+			self.send['status']  = '1' 
+			self.send['message'] = "Success" 
+
+		return Response(self.send)
+
+	@action(detail=True,methods=['get'],url_name="getproducts")
+	def products(self,request,pk=0):
+
+		try:
+			category = self.queryset.get(pk=pk)
+		except Categories.DoesNotExist:
+			return Response(self.send)
+
+		subcategories = SubCategories.objects.filter(category=category)
+		data = []
+		for subcategory in subcategories:
+			products = Products.objects.filter(subcategory=subcategory).filter(status=1)
+			product_serializer = ProductsSerializer(products,many=True)
+			for product in product_serializer.data:
+				data.append(product)
+
+		self.send['data'] = data
+
+		if self.send['data']:
+			self.send['status']  = '1' 
+			self.send['message'] = "Success"
+
+		return Response(self.send)
+
+
 	def create(self,request):
-		self.send['message'] = "Not Implemented"
+		self.send['message'] = "Sorry, Not Implemented"
 		return Response(self.send)
 
 	def update(self,request,pk=None):
-		self.send['message'] = "Not Implemented"
+		self.send['message'] = "Sorry, Not Implemented"
 		return Response(self.send)
 
 	def partial_update(self,request,pk=None):
-		self.send['message'] = "Not Implemented"
+		self.send['message'] = "Sorry, Not Implemented"
 		return Response(self.send)
 
 	def destroy(self,request,pk=None):
-		self.send['message'] = "Not Implemented"
+		self.send['message'] = "Sorry, Not Implemented"
 		return Response(self.send)
+
+
 #-------------------------------------Sub Categgory View Set -------------------------------------------
 
 class SubCategoryViewSet(viewsets.ModelViewSet):
@@ -436,6 +479,20 @@ class SubCategoryViewSet(viewsets.ModelViewSet):
 
 		return Response(self.send)
 
+
+	@action(detail=True,methods=['get'],url_name="getproducts")
+	def products(self,request,pk=0):
+		subcategory = self.queryset.get(pk=pk)
+		products = Products.objects.filter(subcategory=subcategory)
+		product_serializer = ProductsSerializer(products,many=True)
+
+		self.send['data'] = product_serializer.data
+
+		if self.send['data']:
+			self.send['status']  = '1' 
+			self.send['message'] = "Success" 
+
+		return Response(self.send)
 
 
 	def create(self,request):

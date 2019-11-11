@@ -6,14 +6,16 @@
   <div class="row">
     <div class="col-sm-12">
       <div class="card">
-        <div class="card-header">
+        <!-- <div class="card-header">
           <h5 class="card-header-text"> {{ data.title }}</h5>
-        </div>
+        </div> -->
         <div class="card-block">
-          <p>Category Name  : {{data.category.category_name}}</p>
-          <p>Category Image : <img src="{{ data.category.image.url }}" height="50"></p>
-          <p>Status : {{ data.category.status|status }}</p>
-
+          <p>{{ data.category.created_at|date:"D d M Y" }} {{ data.category.created_at|time:"H:i" }}</p>
+          <p><img src="{{ data.category.image.url }}" height="100"></p><br>
+          <p style="font-size: 25px">{{data.category.category_name}} </p>
+              
+          <p style="color: green;font-size: 20px">{{ data.category.status|status }}</p>
+          <p style="float: right">Last Updated : {{ data.category.updated_at|date:"D d M Y" }} {{ data.category.updated_at|time:"H:i" }}</p>
         </div>
       </div>
     </div>

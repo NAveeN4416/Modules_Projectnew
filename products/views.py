@@ -49,7 +49,7 @@ def table_obj(table_name,ref_id):
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 @Check_Login
-@Check_SuperUser
+#@Check_SuperUser
 def Categories_List(request):
 
 	context = {}
@@ -57,7 +57,7 @@ def Categories_List(request):
 	context['title'] 	 = 'Categories List'
 	context['page_name'] = 'categories'
 
-	categories =  Categories.get_active.all()
+	categories =  Categories.objects.all()
 	context['categories'] = categories
 
 	return render(request,'categories/categories_list.html',{'data':context})
@@ -65,8 +65,13 @@ def Categories_List(request):
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 @Check_Login
-@Check_SuperUser
+#@Check_SuperUser
 def Add_Category(request,ref_id=0):
+
+	user = request.user
+
+	if not user.has_perm('products.add_categories',{'user':user}):
+		return render(request,'403.html')
 
 	category = table_obj('categories',ref_id)
 
@@ -97,7 +102,7 @@ def Add_Category(request,ref_id=0):
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 @Check_Login
-@Check_SuperUser
+#@Check_SuperUser
 def View_Category(request,ref_id=0):
 
 	context = {}
@@ -115,8 +120,19 @@ def View_Category(request,ref_id=0):
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 @Check_Login
-@Check_SuperUser
+#@Check_SuperUser
 def Delete_Category(request,ref_id=0):
+
+	user = request.user
+
+	if not user.has_perm('products.delete_categories',{'user':user}):
+		return render(request,'403.html')
+
+	user = request.user
+
+	if not user.has_perm('products.delete_categories',{'user':user}):
+		return render(request,'403.html')
+
 	category = table_obj('categories',ref_id)
 	category.delete()
 
@@ -125,8 +141,13 @@ def Delete_Category(request,ref_id=0):
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 @Check_Login
-@Check_SuperUser
+#@Check_SuperUser
 def Add_SubCategory(request,category_id=0,ref_id=0):
+
+	user = request.user
+
+	if not user.has_perm('products.add_subcategories',{'user':user}):
+		return render(request,'403.html')
 
 	context = {}
 	context['title'] 	  = 'Add SubCategory'
@@ -161,10 +182,10 @@ def Add_SubCategory(request,category_id=0,ref_id=0):
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 @Check_Login
-@Check_SuperUser
+#@Check_SuperUser
 def View_SubCategory(request,ref_id=0):
 
-	subcategory =  SubCategories.objects.get(pk=ref_id) 
+	subcategory = SubCategories.objects.get(pk=ref_id) 
 	products    = Products.objects.filter(subcategory=subcategory)
 
 	context = {}
@@ -179,8 +200,14 @@ def View_SubCategory(request,ref_id=0):
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 @Check_Login
-@Check_SuperUser
+#@Check_SuperUser
 def Delete_SubCategory(request,ref_id=0):
+
+	user = request.user
+
+	if not user.has_perm('products.delete_subcategories',{'user':user}):
+		return render(request,'403.html')
+
 	category = table_obj('subcategories',ref_id)
 	category.delete()
 
@@ -190,7 +217,7 @@ def Delete_SubCategory(request,ref_id=0):
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 @Check_Login
-@Check_SuperUser
+#@Check_SuperUser
 def Products_List(request):
 	context = {}
 
@@ -202,7 +229,7 @@ def Products_List(request):
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 @Check_Login
-@Check_SuperUser
+#@Check_SuperUser
 def Add_Product(request,subcategory_id=0,ref_id=0):
 
 	sub_category = table_obj('subcategories',subcategory_id)

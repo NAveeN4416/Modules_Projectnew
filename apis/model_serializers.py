@@ -65,6 +65,8 @@ class UserMSerializer(serializers.ModelSerializer):
 	#first_name   = serializers.CharField(max_length=10,required=True)
 	user_details = UserdetailsSerializer(read_only=True)
 	date_joined  = serializers.DateTimeField(format="%d, %b %Y")
+	#groups = serializers.StringRelatedField(many=True,read_only=True)
+	#user_permissions = serializers.StringRelatedField(many=True,read_only=True)
 
 	class Meta:
 	 	model  = User
@@ -84,39 +86,45 @@ class UserMSerializer(serializers.ModelSerializer):
 		user.update(**validated_data)
 		return User.objects.get(id=instance.pk)
 
+class ProductImages(serializers.ModelSerializer):
+
+	class Meta:
+		model = ProductImages
+		fields = ['image']
+
 
 class ProductsSerializer(serializers.ModelSerializer):
 
 	user = UserMSerializer()
+	product_images = ProductImages(many=True,read_only=True)
 	created_at = serializers.DateTimeField(format="%d, %b %Y")
 
 	class Meta:
 		model  = Products
-		fields = ['id','user','product_name','product_id','image','price','discount_price','quantity','address','created_at']
-
+		fields = ['id','product_name','product_id','image','price','discount_price','quantity','address','created_at','product_images','user']
 
 
 class SubCategorySerializer(serializers.ModelSerializer):
 
 	created_at = serializers.DateTimeField(format="%d, %b %Y")
-	products   = ProductsSerializer(many=True)
+	#products   = ProductsSerializer(many=True)
 
 	class Meta:
 		model  = SubCategories
-		fields = ['id','sub_category','image','created_at','products']
+		fields = ['id','sub_category','image','created_at']
 
 
 
 class CategorySerializer(serializers.ModelSerializer):
 
-	sub_categories = SubCategorySerializer(many=True, read_only=True)
+	#sub_categories = SubCategorySerializer(many=True, read_only=True)
 	created_at 	   = serializers.DateTimeField(format="%d, %b %Y")
 	#image          = serializers.FileField(use_url=True)
 	#image_url      = serializers.SerializerMethodField()
 
 	class Meta:
 		model  = Categories
-		fields = ['id','category_name','image','created_at','sub_categories']
+		fields = ['id','category_name','image','created_at']
 
 
 	def get_image_url(self, obj):

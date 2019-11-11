@@ -28,7 +28,7 @@ class Initiate_logging:
 
 
 		self.logger.addHandler(filehandler)
-		self.logger.addHandler(mailhandler)
+		#self.logger.addHandler(mailhandler)
 
 
 	def Track(self):
