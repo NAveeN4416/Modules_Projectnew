@@ -20,8 +20,9 @@ urlpatterns = [
 				url(r'^add_subcategory/(?P<category_id>\d+)$', views.Add_SubCategory, name="add_subcategory"),
 
 				#Products
+				url(r'^view_product/(?P<product_id>\d+)$', views.View_Product, name="view_product"),
+				url(r'^delete_product/(?P<product_id>\d+)$', views.Delete_Product, name="delete_product"),
 				url(r'^edit_product/(?P<subcategory_id>\d+)/(?P<ref_id>\d+)$', views.Add_Product, name="edit_product"),
-				url(r'^add_product/(?P<subcategory_id>\d+)$', views.Add_Product, name="add_product"),
+				url(r'^add_product/(?P<subcategory_id>\d+)/$', views.Add_Product, name="add_product"),
 				url(r'^products_list/', views.Products_List, name="products_list"),
-				
 			]

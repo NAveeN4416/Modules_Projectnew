@@ -57,7 +57,7 @@ def Categories_List(request):
 	context['title'] 	 = 'Categories List'
 	context['page_name'] = 'categories'
 
-	categories =  Categories.objects.all()
+	categories =  Categories.statuses.get_active()
 	context['categories'] = categories
 
 	return render(request,'categories/categories_list.html',{'data':context})
@@ -122,14 +122,11 @@ def View_Category(request,ref_id=0):
 @Check_Login
 #@Check_SuperUser
 def Delete_Category(request,ref_id=0):
-
 	user = request.user
-
 	if not user.has_perm('products.delete_categories',{'user':user}):
 		return render(request,'403.html')
 
 	user = request.user
-
 	if not user.has_perm('products.delete_categories',{'user':user}):
 		return render(request,'403.html')
 
@@ -143,9 +140,7 @@ def Delete_Category(request,ref_id=0):
 @Check_Login
 #@Check_SuperUser
 def Add_SubCategory(request,category_id=0,ref_id=0):
-
 	user = request.user
-
 	if not user.has_perm('products.add_subcategories',{'user':user}):
 		return render(request,'403.html')
 
@@ -155,7 +150,6 @@ def Add_SubCategory(request,category_id=0,ref_id=0):
 
 	subcategory = table_obj('subcategories',ref_id)
 	category    = table_obj('categories',category_id)
-
 	if request.method == 'POST' :
 		data  = request.POST.copy()
 		category = Categories.objects.get(pk=data['category_id'])
@@ -171,6 +165,8 @@ def Add_SubCategory(request,category_id=0,ref_id=0):
 		subcategory.status 	      = data['status']
 		subcategory.save();
 
+		return redirect('products:view_category',category.id)
+
 	categories =  Categories.objects.filter(status=1)
 	context['category']    = category
 	context['categories']  = categories
@@ -184,7 +180,6 @@ def Add_SubCategory(request,category_id=0,ref_id=0):
 @Check_Login
 #@Check_SuperUser
 def View_SubCategory(request,ref_id=0):
-
 	subcategory = SubCategories.objects.get(pk=ref_id) 
 	products    = Products.objects.filter(subcategory=subcategory)
 
@@ -202,9 +197,7 @@ def View_SubCategory(request,ref_id=0):
 @Check_Login
 #@Check_SuperUser
 def Delete_SubCategory(request,ref_id=0):
-
 	user = request.user
-
 	if not user.has_perm('products.delete_subcategories',{'user':user}):
 		return render(request,'403.html')
 
@@ -220,7 +213,6 @@ def Delete_SubCategory(request,ref_id=0):
 #@Check_SuperUser
 def Products_List(request):
 	context = {}
-
 	context['title'] 	 = 'Products List'
 	context['page_name'] = 'products'
 
@@ -231,7 +223,6 @@ def Products_List(request):
 @Check_Login
 #@Check_SuperUser
 def Add_Product(request,subcategory_id=0,ref_id=0):
-
 	sub_category = table_obj('subcategories',subcategory_id)
 	product      = table_obj('products',ref_id)
 
@@ -274,8 +265,31 @@ def Add_Product(request,subcategory_id=0,ref_id=0):
 	context = {}
 
 	context['sub_category'] = sub_category
+	context['product'] 		= product
+	context['product_id'] 	= ref_id
 	context['title'] 	 	= 'Add Product'
 	context['page_name'] 	= 'categories'
 
 	return render(request,'products/add_product.html',{'data':context})
 
+
+@cache_control(no_cache=True, must_revalidate=True, no_store=True)
+@Check_Login
+#@Check_SuperUser
+def View_Product(request,product_id=0):
+	return HttpResponse("Hello")
+
+
+@cache_control(no_cache=True, must_revalidate=True, no_store=True)
+@Check_Login
+#@Check_SuperUser
+def Delete_Product(request,product_id=0):
+	user = request.user
+	if not user.has_perm('products.delete_products',{'user':user}):
+		return render(request,'403.html')
+
+	product = table_obj('products',product_id)
+	subcategory_id =  product.subcategory.id
+	product.delete()
+
+	return redirect('products:view_subcategory',subcategory_id)

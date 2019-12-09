@@ -45,15 +45,21 @@ def get_track(request):
 		data.append(d)
 	return JsonResponse(data,safe=False)
 
+results = ''
+
+async def render_movie(movie_name):
+	global results
+	session = AsyncHTMLSession()
+	results = await session.get(f"https://isongs.info/search/?q={movie_name}")
+	results.html.render()
+
 
 def search_movie(request):
 
 	if request.method=='POST':
 		movie_name = request.POST.get('movie_name').replace(' ','+')
 
-		session = HTMLSession()
-		results = session.get(f"https://isongs.info/search/?q={movie_name}")
-		results.html.render()
+		loop = asyncio.set_event_loop()
 
 		return HttpResponse(results.html.html)
 

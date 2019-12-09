@@ -65,6 +65,7 @@ class UserMSerializer(serializers.ModelSerializer):
 	#first_name   = serializers.CharField(max_length=10,required=True)
 	user_details = UserdetailsSerializer(read_only=True)
 	date_joined  = serializers.DateTimeField(format="%d, %b %Y")
+	email 		 = serializers.EmailField(required=True)
 	#groups = serializers.StringRelatedField(many=True,read_only=True)
 	#user_permissions = serializers.StringRelatedField(many=True,read_only=True)
 
@@ -85,6 +86,7 @@ class UserMSerializer(serializers.ModelSerializer):
 		user = User.objects.filter(id=instance.pk)
 		user.update(**validated_data)
 		return User.objects.get(id=instance.pk)
+
 
 class ProductImages(serializers.ModelSerializer):
 
@@ -112,7 +114,6 @@ class SubCategorySerializer(serializers.ModelSerializer):
 	class Meta:
 		model  = SubCategories
 		fields = ['id','sub_category','image','created_at']
-
 
 
 class CategorySerializer(serializers.ModelSerializer):

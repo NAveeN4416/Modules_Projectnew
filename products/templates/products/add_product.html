@@ -17,51 +17,59 @@
       <div class="card">
         <div class="card-header"><h5 class="card-header-text"> {{ data.title }}</h5></div>
           <div class="card-block">
-            <form id="insert_services" action="{% url 'products:add_product' data.sub_category.id %}" method="post" enctype="multipart/form-data">
+            {% if data.product_id %}
+              <form id="insert_services" action="{% url 'products:edit_product' data.sub_category.id data.product_id %}" method="post" enctype="multipart/form-data">
+            {% else %}
+              <form id="insert_services" action="{% url 'products:add_product' data.sub_category.id %}" method="post" enctype="multipart/form-data">
+            {% endif %}  
             {% csrf_token %}
                <div class="form-group row">
                   <label for="example-tel-input" class="col-xs-2 col-form-label form-control-label">Name<span class="important">*</span></label>
                   <div class="col-sm-4">
-                    <input type="text" name="product_name" class="form-control" placeholder="Name" required>
+                    <input type="text" name="product_name" class="form-control" placeholder="Name" value="{{data.product.product_name|default_if_none:''}}" required>
                   </div>
               </div>
                <div class="form-group row">
                   <label for="example-tel-input" class="col-xs-2 col-form-label form-control-label">Price<span class="important">*</span></label>
                   <div class="col-sm-4">
-                    <input type="text" name="price" class="form-control" placeholder="eg: 50" required>
+                    <input type="text" name="price" class="form-control" value="{{data.product.price|default_if_none:''}}" placeholder="eg: 50" required>
                   </div>
               </div>
               <div class="form-group row">
                   <label for="example-tel-input" class="col-xs-2 col-form-label form-control-label">Discount Price</label>
                   <div class="col-sm-4">
-                    <input type="text" name="discount_price" class="form-control" placeholder="eg: 10">
+                    <input type="text" name="discount_price" value="{{data.product.discount_price|default_if_none:''}}" class="form-control" placeholder="eg: 10">
                   </div>
               </div>
-              <!-- <div class="form-group row">
-                  <label for="example-tel-input" class="col-xs-2 col-form-label form-control-label">Discount Price</label>
-                  <div class="col-sm-4">
-                    <input type="text" name="discount_price" class="form-control" disabled>
-                  </div>
-              </div> -->
               <div class="form-group row">
                 <label for="example-tel-input" class="col-xs-2 col-form-label form-control-label">Quantity<span class="important">*</span></label>
                 <div class="col-sm-4">
-                  <input type="text" name="quantity" class="form-control" placeholder="eg: 5" required>
+                  <input type="text" name="quantity" class="form-control" value="{{data.product.quantity|default_if_none:''}}" placeholder="eg: 5" required>
                 </div>
               </div>
-              <div class="form-group row">
-                <label for="example-tel-input" class="col-xs-2 col-form-label form-control-label">Images<span class="important">*</span></label>
-                <div class="col-sm-4">
-                  <input type="file" name="product_images" class="form-control" required multiple>
+
+              {% if data.product.image %}
+                <div class="form-group row">
+                  <label for="example-tel-input" class="col-xs-2 col-form-label form-control-label">Images<span class="important">*</span></label>
+                  <div class="col-sm-4">
+                    <a style="font-size: 10px" href="{{ data.product.image.url }}" target="_blank">{{ data.product.image.url }}</a>
+                    <input type="file" name="product_images" class="form-control" multiple>
+                  </div>
                 </div>
-              </div>
+              {% else %}
+                <div class="form-group row">
+                  <label for="example-tel-input" class="col-xs-2 col-form-label form-control-label">Images<span class="important">*</span></label>
+                  <div class="col-sm-4">
+                    <input type="file" name="product_images" class="form-control" required multiple>
+                  </div>
+                </div>
+              {% endif %}
               <!-- <div class="form-group row">
                   <label for="example-tel-input" class="col-xs-3 col-form-label form-control-label">Rules Content(Ar)*</label>
                   <div class="col-sm-9">
                       <textarea  id="content_ar" name="data[content_ar]"  class="form-control ckeditor" placeholder="Content" rows="10" cols="10"><?php echo @$getdata[content_ar];?></textarea>
                   </div>
               </div> -->
-
               <div class="form-group row">
                 <label class="col-xs-2 col-form-label form-control-label">Status</label>
                 <div class="col-sm-4">

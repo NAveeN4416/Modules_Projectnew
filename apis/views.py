@@ -9,8 +9,9 @@
     # versioning_class = api_settings.DEFAULT_VERSIONING_CLASS
 
 
-from log_controller import Initiate_logging
+
 import os
+from log_controller import Initiate_logging
 from django.shortcuts import render
 from django.contrib.auth.models import User
 from users.models import UserDetails
@@ -43,10 +44,8 @@ os.makedirs(log_path,exist_ok=True)
 
 
 def Serialize_Method(SerializerClass,data,instance=None,many=False,partial=False):
-	if instance:
-		details_serializer = SerializerClass(instance,data=data,many=many,partial=partial)
-	else:
-		details_serializer = SerializerClass(data=data,many=many)
+
+	details_serializer = SerializerClass(instance=instance,data=data,many=many,partial=partial)
 
 	if details_serializer.is_valid():
 		return (True, details_serializer)
@@ -91,9 +90,9 @@ class UserAuthViewSet(viewsets.ModelViewSet):
 	@action(detail=False,methods=['post'],url_name="user_login")
 	def user_login(self,request):
 
-		email    = request.POST.get('email',None)
-		mobile   = request.POST.get('mobile',None)
-		password = request.POST.get('password',None)
+		email    = request.data.get('email',None)
+		mobile   = request.data.get('mobile',None)
+		password = request.data.get('password',None)
 
 		user = User.objects.get(Q(username=email) | Q(email=email))
 		if user :
@@ -129,9 +128,8 @@ class UserMViewSet(viewsets.ModelViewSet):
 
 	#queryset          = User.objects.all()
 	serializer_class  = UserMSerializer
-	lookip_field      = 'username'
+	lookup_field      = 'pk'
 	#multiple_lookup_fields  = ['username','email']
-
 
 
 	authentication_classes = [TokenAuth]
@@ -194,7 +192,7 @@ class UserMViewSet(viewsets.ModelViewSet):
 			if user.data:
 				self.send['data']  = user.data
 				return self.Send_Response()
-		
+
 
 	#Create user
 	def create(self,request):
@@ -206,7 +204,7 @@ class UserMViewSet(viewsets.ModelViewSet):
 			required_fields(self,details_serializer)
 			return self.Send_Response(message=message,status=0)
 
-		data = request.POST.copy()
+		data = request.data.copy()
 		existance_flag = User.objects.filter(email=data.get('email',None))
 
 		#Check for user existance
@@ -326,7 +324,6 @@ class CategoryViewSet(viewsets.ModelViewSet):
 		self.send    = {}
 		self.details = {}
 		self.request = None
-		self.single_record  = False
 
 		self.send['status']  = '0'
 		self.send['message'] = "Data Not found!"
@@ -334,7 +331,6 @@ class CategoryViewSet(viewsets.ModelViewSet):
 
 
 	def list(self,request,format="json"):
-
 		category_serializer = CategorySerializer(self.queryset,many=True)
 
 		self.send['data'] = category_serializer.data
@@ -347,7 +343,6 @@ class CategoryViewSet(viewsets.ModelViewSet):
 
 
 	def retrieve(self,request,pk=0):
-
 		category = Categories.objects.filter(pk=pk)
 
 		if category and category[0]:
@@ -363,7 +358,6 @@ class CategoryViewSet(viewsets.ModelViewSet):
 
 	@action(detail=True,methods=['get'],url_name="getsubcategories")
 	def subcategories(self,request,pk=0):
-
 		try:
 			category = self.queryset.get(pk=pk)
 		except Categories.DoesNotExist:
@@ -380,9 +374,9 @@ class CategoryViewSet(viewsets.ModelViewSet):
 
 		return Response(self.send)
 
+
 	@action(detail=True,methods=['get'],url_name="getproducts")
 	def products(self,request,pk=0):
-
 		try:
 			category = self.queryset.get(pk=pk)
 		except Categories.DoesNotExist:
@@ -398,7 +392,7 @@ class CategoryViewSet(viewsets.ModelViewSet):
 
 		self.send['data'] = data
 
-		if self.send['data']:
+		if data:
 			self.send['status']  = '1' 
 			self.send['message'] = "Success"
 
@@ -421,6 +415,102 @@ class CategoryViewSet(viewsets.ModelViewSet):
 		self.send['message'] = "Sorry, Not Implemented"
 		return Response(self.send)
 
+
+class ReadCategoryViewSet(viewsets.ReadOnlyModelViewSet):
+
+	queryset         	   = Categories.objects.filter(status=1)
+	serializer_class 	   = CategorySerializer
+
+	#authentication_classes = [TokenAuth]
+	#permission_classes     = [IsAuthenticated]
+	#renderer_classes 	    = [JSONRenderer,TemplateHTMLRenderer]
+
+
+	#Tracking User Authentication
+	report_name = f"{log_path}/CategoryModel"
+	Log = Initiate_logging(report_name,10)
+	product_log = Log.Track()
+
+
+	#===Constructor=====================
+	def __init__(self,*args,**kwargs):
+		super().__init__(*args,**kwargs)
+		self.send    = {}
+		self.details = {}
+		self.request = None
+
+		self.send['status']  = '0'
+		self.send['message'] = "Data Not found!"
+		self.send['data']    = {}
+		print(kwargs)
+
+
+	def list(self,request,format="json"):
+		category_serializer = CategorySerializer(self.queryset,many=True)
+
+		self.send['data'] = category_serializer.data
+
+		if self.send['data']:
+			self.send['status']  = '1' 
+			self.send['message'] = "Success" 
+
+		return Response(self.send)
+
+
+	def retrieve(self,request,pk=0):
+		category = Categories.objects.filter(pk=pk)
+
+		if category and category[0]:
+			category_serializer = CategorySerializer(instance=category[0])
+			self.send['data'] = category_serializer.data
+
+		if self.send['data']:
+			self.send['status']  = '1' 
+			self.send['message'] = "Success"
+
+		return Response(self.send)
+
+
+	@action(detail=True,methods=['get'],url_name="getsubcategories")
+	def subcategories(self,request,pk=0):
+		try:
+			category = self.queryset.get(pk=pk)
+		except Categories.DoesNotExist:
+			return Response(self.send)
+
+		subcategories = SubCategories.objects.filter(category=category)
+		subcategory_serializer = SubCategorySerializer(subcategories,many=True)
+
+		self.send['data'] = subcategory_serializer.data
+
+		if self.send['data']:
+			self.send['status']  = '1' 
+			self.send['message'] = "Success" 
+
+		return Response(self.send)
+
+	@action(detail=True,methods=['get'],url_name="getproducts")
+	def products(self,request,pk=0):
+		try:
+			category = self.queryset.get(pk=pk)
+		except Categories.DoesNotExist:
+			return Response(self.send)
+
+		subcategories = SubCategories.objects.filter(category=category)
+		data = []
+		for subcategory in subcategories:
+			products = Products.objects.filter(subcategory=subcategory).filter(status=1)
+			product_serializer = ProductsSerializer(products,many=True)
+			for product in product_serializer.data:
+				data.append(product)
+
+		self.send['data'] = data
+
+		if data:
+			self.send['status']  = '1' 
+			self.send['message'] = "Success"
+
+		return Response(self.send)
 
 #-------------------------------------Sub Categgory View Set -------------------------------------------
 
@@ -446,7 +536,6 @@ class SubCategoryViewSet(viewsets.ModelViewSet):
 		self.send    = {}
 		self.details = {}
 		self.request = None
-		self.single_record  = False
 
 		self.send['status']  = 0
 		self.send['message'] = "Data Not found!"
@@ -535,7 +624,6 @@ class ProductsViewSet(viewsets.ModelViewSet):
 		self.send    = {}
 		self.details = {}
 		self.request = None
-		self.single_record  = False
 
 		self.send['status']  = '0'
 		self.send['message'] = "Data Not found!"

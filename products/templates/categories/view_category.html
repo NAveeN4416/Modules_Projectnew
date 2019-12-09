@@ -10,7 +10,7 @@
           <h5 class="card-header-text"> {{ data.title }}</h5>
         </div> -->
         <div class="card-block">
-          <p>{{ data.category.created_at|date:"D d M Y" }} {{ data.category.created_at|time:"H:i" }}</p>
+          <p>{{ data.category.created_at|date:"D d M Y" }} {{ data.category.created_at|time:"H:i" }}</p><br>
           <p><img src="{{ data.category.image.url }}" height="100"></p><br>
           <p style="font-size: 25px">{{data.category.category_name}} </p>
               

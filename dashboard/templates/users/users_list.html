@@ -1,0 +1,80 @@
+{% extends 'includes/base.html' %}
+{% load tags %}
+
+
+{% block content %}
+  <div class="row">
+    <div class="col-sm-12">
+      <div class="card">
+        <div class="card-header">
+        	<h5 class="card-header-text"> {{ data.title }}</h5>
+        	<!-- <span>
+                      <a href="{% url 'products:add_category' %}">
+                        <button class="btn btn-success fa fa-plus" style="margin-left: 70%"> Category</button>
+                      </a>
+          </span> -->
+        </div>
+        <div class="card-block">
+			    <table id="advanced-table" class="table dt-responsive table-striped table-bordered nowrap">
+            <thead>
+              <tr>
+                <th>S NO</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tfoot>
+              <tr>
+                <th>S NO</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </tfoot>
+
+            <tbody>
+              {% for user in data.users %}
+                <tr>
+                    <td>{{ user.id }}</td>
+                    <td><span>{{ user.username }}</span></td>
+                    <td><span>{{ user.email }}</span></td>
+                    <td>
+                      {% if user.is_active %}
+                        <span class="badge badge-success">{{ user.is_active|status }}</span>
+                      {% else %}
+                        <span class="badge badge-danger">{{ user.is_active|status }}</span>
+                      {% endif %}
+                    </td>
+                    <td>
+                      <div class="btn-group">
+                        <button type="button" class="btn btn-sm btn-lg btn-info dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                          Action
+                        </button>
+                        <div class="dropdown-menu" style="background: #d6dadc">
+                          <a class="dropdown-item" href="{% url 'dashboard:user_details' user.id %}">
+                            <i class="fa fa-eye" aria-hidden="true"></i> View
+                          </a>
+                          <a class="dropdown-item" href="#">
+                            <i class="fa fa-edit" aria-hidden="true"></i> Edit
+                          </a>
+                          <a class="dropdown-item" href="#">
+                            <i class="fa fa-trash" aria-hidden="true"></i> Delete
+                          </a>
+                          <!-- <div class="dropdown-divider"></div>
+                          <a class="dropdown-item" href="#">Separated link</a> -->
+                        </div>
+                      </div>
+                    </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

@@ -3,12 +3,25 @@ from django.contrib.auth.models import User
 
 
 #Categories Manager
+class CommonQuerySet(models.QuerySet):
+
+	def active(self):
+		return self.filter(status=1)
+
+	def inactive(self):
+		return self.filter(status=0)
+
 
 class CategoriesManager(models.Manager):
 
 	def get_queryset(self):
-		return super().get_queryset().filter(status=1)
+		return CommonQuerySet(self.model,using=self._db)
 
+	def get_active(self):
+		return self.get_queryset().active()
+
+	def get_inactive(self):
+		return self.get_queryset().inactive()
 
 
 # Create your models here.
@@ -21,7 +34,7 @@ class Categories(models.Model):
 	updated_at    = models.DateTimeField(auto_now=True)
 
 	objects    = models.Manager()
-	get_active = CategoriesManager()
+	statuses = CategoriesManager()
 
 
 	def __str__(self):
@@ -67,7 +80,7 @@ class Products(models.Model):
 
 class ProductImages(models.Model):
 
-	product    = models.ForeignKey(Products,related_name="product_images", on_delete="CASCADE")
+	product    = models.ForeignKey(Products,related_name="product_images", on_delete=models.CASCADE)
 	image 	   = models.FileField(upload_to="user_products")
 	status	   = models.IntegerField()
 	created_at = models.DateTimeField(auto_now_add=True)

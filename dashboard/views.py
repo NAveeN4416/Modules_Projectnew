@@ -6,7 +6,7 @@ from django.http import HttpRequest, HttpResponse ,JsonResponse
 #from .forms import UserRegistration
 from products.models import Products, ProductImages, Categories, SubCategories
 import json
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Permission
 from django.views.decorators.cache import cache_control
 from users.models import UserDetails
 from users import constants as C
@@ -53,6 +53,19 @@ def Index(request):
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 @Check_Login
+#@Check_SuperUser
+def Profile(request):
+	context = {}
+
+	context['title'] 	 = 'Profile'
+	context['page_name'] = 'profile'
+
+	return render(request,'dashboard/profile.html',{'data':context})
+
+
+
+@cache_control(no_cache=True, must_revalidate=True, no_store=True)
+@Check_Login
 def TermsConditions(request):
 	context = {}
 
@@ -60,4 +73,34 @@ def TermsConditions(request):
 	context['page_name'] = 'terms'
 
 	return render(request,'dashboard/terms_conditions.html',{'data':context})
+
+
+
+@cache_control(no_cache=True, must_revalidate=True, no_store=True)
+@Check_Login
+def Users_List(request,is_staff=0):
+	context = {}
+	title = "User's List" if is_staff==0 else "Staff List" 
+	context['title'] 	 = title
+	context['page_name'] = 'users'
+	context['users'] = User.objects.filter(is_staff=is_staff).exclude(username='admin')
+
+	return render(request,'users/users_list.html',{'data':context})
+
+
+
+@cache_control(no_cache=True, must_revalidate=True, no_store=True)
+@Check_Login
+def User_Details(request,user_id):
+	context = {}
+	context['title'] 	 = 'User Details'
+	context['page_name'] = 'users'
+
+	user = User.objects.get(id=user_id)
+	user.permissions = Permission.objects.filter(user=user)
+	user.all_groups = user.groups.all()
+
+	context['user'] = user
+
+	return render(request,'users/user_details.html',{'data':context})
 

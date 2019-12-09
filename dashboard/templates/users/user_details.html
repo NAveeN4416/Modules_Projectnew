@@ -1,0 +1,97 @@
+{% extends 'includes/base.html' %}
+{% load tags %}
+
+
+{% block content %}
+  <div class="row">
+    <div class="col-sm-4">
+      <div class="card">
+        <div class="card-header">
+          <h5 class="card-header-text"> {{ data.user.username }} </h5>
+          {% if data.user.is_active %}
+            <i class="fa fa-circle" style="color: green;font-size: 12px;float: right"> Active</i>
+          {% else %}
+            <i class="fa fa-circle" style="color: red;font-size: 12px;float: right"> InActive</i>
+          {% endif %}
+        </div>
+        <div class="card-block">
+          <div class="card-body">
+            <img src="/static/images/avatar-1.png" alt="User Image" class="img-circle">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-sm-4">
+      <div class="card">
+        <div class="card-block">
+          <div class="card-body">
+            <h5 class="card-title">Personal Details</h5>
+          </div>
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item">{{ data.user.first_name|capfirst }} {{ data.user.last_name|capfirst }}</li>
+            <li class="list-group-item">{{ data.user.email }}</li>
+            <li class="list-group-item">Date joined : {{ data.user.date_joined|date:"D d M Y" }} {{ data.user.date_joined|time:"H:i" }}</li>
+            <li class="list-group-item">Last Login : {{ data.user.last_login|date:"D d M Y" }} {{ data.user.last_login|time:"H:i" }}</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-4">
+      <div class="card">
+        <div class="card-block">
+          <div class="card-body">
+            <h5 class="card-title">User Groups</h5>
+          </div>
+          {% if data.user.all_groups %}
+            <ul class="list-group list-group-flush">
+              {% for group in data.user.all_groups %}
+                <li class="list-group-item list-group-item-primary">{{ group.name }}</li>
+              {% endfor %}
+            </ul>
+            {% else %}
+              <p>No Groups Found</p>
+            {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  {% if data.user.permissions %}
+    <div class="row">
+      <div class="main-header">
+        <h4>Permissions</h4>
+      </div>
+      {% for permission in data.user.permissions %}
+      <div class="col-sm-4">
+        <div class="card">
+          <div class="card-block">
+            <div class="card-body">
+              <h5 class="card-title">{{ permission.name }}</h5>
+              <!-- <p class="card-text">With supporting text below as a natural lead-in to additional content.</p> -->
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  {% endif %}  
+
+<div class="row">
+  <div class="col-sm-12">
+    <div class="card">
+      <div class="card-block">
+        <div class="card-body">
+          <h5 class="card-title">Description</h5>
+          <div>
+          <p class="card-text">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</p>
+          <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</p>
+          <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

@@ -66,7 +66,20 @@
         li.dropdown.active .inactive-arrow{
             display: none !important;
         }
-    
+
+        .dropdown>.dropdown-menu {
+          top: 200%;
+          transition: 0.3s all ease-in-out;
+        }
+        .dropdown:hover>.dropdown-menu {
+          display: block;
+          top: 100%;
+        }
+
+        .dropdown>.dropdown-toggle:active {
+          /*Without this, clicking will make it sticky*/
+            pointer-events: none;
+        }
     </style>
 </head>
 
@@ -83,13 +96,36 @@
                     <ul class="top-nav">
                        
                         <!-- chat dropdown -->
-                       
+                        <!-- <li class="dropdown">
+                            <a href="#!" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" class="dropdown-toggle drop icon-circle drop-image">
+                                <i class="fa fa-bell" aria-hidden="true" style="color: #373a3c"></i>
+                            </a>
+                            <ul class="dropdown-menu settings-menu">
+                                <li><a href="{% url 'dashboard:users_list' %}"><i class="icon-user"></i> Users</a></li>
+                                <li><a href="#"><i class="icon-user"></i> Service Providers</a></li>
+                            </ul>
+                        </li> -->
+
+
+                        <li class="dropdown">
+                            <a href="#!" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" class="dropdown-toggle drop icon-circle drop-image">
+                                <i class="fa fa-users" style="color: #373a3c"></i>
+                            </a>
+                            <ul class="dropdown-menu settings-menu">
+                                <li><a href="{% url 'dashboard:users_list' %}"><i class="icon-user"></i> Users</a></li>
+                                {% if request.user.is_superuser %}
+                                    <li><a href="{% url 'dashboard:staff_list' '1' %}"><i class="icon-user"></i> Staff </a></li>
+                                {% endif %}
+                            </ul>
+                        </li>
+
+
                         <!-- window screen -->
-                        <li class="pc-rheader-submenu">
+                        <!-- <li class="pc-rheader-submenu">
                             <a href="#" class="drop icon-circle" onclick="javascript:toggleFullScreen()">
                                 <i class="icon-size-fullscreen"></i>
                             </a>
-                        </li>
+                        </li> -->
                         <!-- User Menu-->
                         <li class="dropdown">
                             <a href="#!" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" class="dropdown-toggle drop icon-circle drop-image">
@@ -97,8 +133,10 @@
                                 <span>{{ user.username }}<i class=" icofont icofont-simple-down"></i></span>
                             </a>
                             <ul class="dropdown-menu settings-menu">
-                                <!--<li><a href="javascript:void(0)"><i class="icon-settings"></i> Settings</a></li>-->
-                                <li><a href="#"><i class="icon-user"></i> Profile</a></li>
+                                <li><a href="{% url 'dashboard:profile' %}"><i class="icon-user"></i> Profile</a></li>
+                                {% if request.user.is_superuser %}
+                                    <li><a href="javascript:void(0)"><i class="icon-settings"></i> Settings</a></li>
+                                {% endif %}
                                 <li class="p-0">
                                     <div class="dropdown-divider m-0"></div>
                                 </li>
@@ -131,11 +169,7 @@
                         <a class="waves-effect waves-dark" href="{% url 'products:categories_list' %}" >
                         <i class="fa fa-tachometer"></i><span>Categories</span></a>
                     </li>
-                    <li class="{% if data.page_name == 'users' %}  active {% endif %}">
-                        <a class="waves-effect waves-dark" href="#" >
-                        <i class="fa fa-users"></i><span>Users</span></a>
-                    </li>
-                    <li class="{% if data.page_name == 'sp' %}  active {% endif %}">
+                    <!-- <li class="{% if data.page_name == 'sp' %}  active {% endif %}">
                         <a href="javascript:"><i class="fa fa-users"></i><span>Service Providers</span><i class="icon-arrow-down"></i></a>
                         <ul class="treeview-menu">
                             <li class="<?php echo (@$subpage_name=='active')?'active':'';?>">
@@ -151,7 +185,7 @@
                             <i class="fa fa-ban"></i><span>Rejected</span></a>
                             </li>
                         </ul>
-                    </li>
+                    </li> -->
                     <li class="{% if data.page_name == 'terms' %}  active {% endif %}">
                         <a class="waves-effect waves-dark" href="{% url 'dashboard:terms' %}" >
                         <i class="fa fa-server"></i><span>Terms & Conditions </span></a>
@@ -194,7 +228,6 @@
                     </div>
                   </div>
                 </div>
-                
                 {% block content %}{% endblock %}
 
             </div>
@@ -279,141 +312,3 @@
 
 </body>
 </html>
-<!-- success alert -->
-<!-- <?php if($this->session->flashdata('success')) { ?>
-<script type="text/javascript">
-$.notify({
-    icon: '<?php echo base_url()?>assets/images/check.gif',
-    title: ' Success',
-    message: '<?php echo $this->session->flashdata('success')?>'
-},{
-    type: "pastel-info",
-    allow_dismiss: true,
-    newest_on_top: true,
-    showProgressbar: false,
-    placement: {
-        from: "bottom",
-        align: "right"
-    },
-    offset: 20,
-    spacing: 10,
-    z_index: 5000,
-    delay: 5000,
-    timer: 1000,
-    url_target: '_blank',
-    mouse_over: null,
-    animate: {
-        enter: 'animated bounceInDown',
-        exit: 'animated zoomOutUp'
-    },
-    onShow: null,
-    onShown: null,
-    onClose: null,
-    onClosed: null,
-    icon_type: 'image',
-    template: '<div data-notify="container" class="col-xs-11 col-sm-3 alert alert-{0}" role="alert">' +
-        '<button type="button" aria-hidden="true" class="close" data-notify="dismiss">×</button>' +
-        '<img data-notify="icon">' +
-        '<span data-notify="title">{1}</span> ' +
-        '<span data-notify="message"><p>{2}</p></span>' +
-        '<div class="progress" data-notify="progressbar">' +
-            '<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
-        '</div>' +
-        '<a href="{3}" target="{4}" data-notify="url"></a>' +
-    '</div>' 
-});
-
-</script> -->
-<!-- <?php } ?>
-error alert
-<?php if($this->session->flashdata('error')) { ?>
-<script type="text/javascript">
-$.notify({
-    icon: '<?php echo base_url()?>assets/images/cross.gif',
-    title: ' Alert',
-    message: "<?php echo $this->session->flashdata('error')?>"
-},{
-    type: "pastel-danger",
-    allow_dismiss: true,
-    newest_on_top: true,
-    showProgressbar: false,
-    placement: {
-        from: "bottom",
-        align: "right"
-    },
-    offset: 20,
-    spacing: 10,
-    z_index: 5000,
-    delay: 5000,
-    timer: 1000,
-    url_target: '_blank',
-    mouse_over: null,
-    animate: {
-        enter: 'animated bounceInDown',
-        exit: 'animated zoomOutUp'
-    },
-    onShow: null,
-    onShown: null,
-    onClose: null,
-    onClosed: null,
-    icon_type: 'image',
-    template: '<div data-notify="container" class="col-xs-11 col-sm-3 alert alert-{0}" role="alert">' +
-        '<button type="button" aria-hidden="true" class="close" data-notify="dismiss">×</button>' +
-        '<img data-notify="icon" class="image-cross">' +
-        '<span data-notify="title">{1}</span> ' +
-        '<span data-notify="message"><p>{2}</p></span>' +
-        '<div class="progress" data-notify="progressbar">' +
-            '<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
-        '</div>' +
-        '<a href="{3}" target="{4}" data-notify="url"></a>' +
-    '</div>' 
-});
-
-</script>
-<?php } ?>
-error alert
-<style>
-[data-notify="container"][class*="alert-pastel-"] {
-           /*background-color: rgb(255, 255, 238);*/
-            background:linear-gradient(65deg, #378482 0%, #378482 100%);
-            border-width: 0px;
-            border-left: 15px solid rgb(255, 240, 106);
-            border-radius: 0px;
-            box-shadow: 0px 0px 5px rgba(51, 51, 51, 0.3);
-            font-family: 'Old Standard TT', serif;
-            letter-spacing: 1px;
-        }
-        [data-notify="container"].alert-pastel-info {
-            border-left-color: #68bfbd;
-        }
-        [data-notify="container"].alert-pastel-danger {
-            border-left-color: #68bfbd;
-        }
-        [data-notify="container"][class*="alert-pastel-"] > [data-notify="title"] {
-            color: #FFFFFF;
-            font-weight: bold;
-            font-size: 200%;
-        }
-        [data-notify="container"][class*="alert-pastel-"] > [data-notify="message"] {
-            font-weight: 400;
-        }
-        [data-notify="message"] p{
-            border: 2px solid #FFFFFF;
-            padding : 2%;
-            animation: blinker 1s linear infinite;
-            font-size: 130%;
-            color:#FFFFFF;
-        }
-        @keyframes blinker {  
-            50% { border: 2px solid #fff; }
-            100% { border: 2px solid #fff; }
-        }
-        [data-notify="icon"] {
-            height: 80px;
-            color:#FFFFFF;
-        }
-        .image-cross {
-            height: 30px !important;
-        }
-</style>
- -->
