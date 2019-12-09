@@ -1,0 +1,221 @@
+{% extends 'includes/base.html' %}
+
+{% block content %}
+    <!-- Header end -->
+    <div class="row">
+        <div class="col-xl-3 col-lg-4">
+            <div class="card faq-left">
+                <div class="card-block">
+    				<img class="img-fluid" src="/static/images/avatar-1.png" alt="" style="max-width: 50%">
+    				</br>
+                    <ul>
+    				<li class="faq-contact-card">
+                        <i class="icofont icofont-ui-user"></i>
+                           {{ request.user.username }}
+                        </li>
+                        <li class="faq-contact-card">
+                        <i class="icofont icofont-email"></i>
+                            {{ request.user.email }}
+                        </li>
+                    </ul>
+                    <div class="faq-profile-btn">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-9 col-lg-8">
+            <div class="tab-header">
+                <ul class="nav nav-tabs md-tabs tab-timeline" role="tablist">
+                    <li class="nav-item active">
+                        <a class="nav-link " data-toggle="tab" href="#personal" role="tab"><i>Personal Info</i></a>
+                        <div class="slide"></div>
+                    </li>
+                    <li class="nav-item">
+                        <a  class="nav-link" data-toggle="tab" href="#tab2" role="tab"><i>Change Password</i></a>
+                        <div class="slide"></div>
+                    </li>
+                </ul>
+            </div>
+            <div class="tab-content">
+                <div class="tab-pane active" id="personal" role="tabpanel">
+                    <div class="card">
+                        <div class="card-header"><h5 class="card-header-text">About Me</h5>
+                        </div>
+                        <div class="card-block">
+                            <div class="edit-info">
+                                <div class="row">
+                                    <div class="col-lg-12">
+                                        <div class="general-info">
+                                            <div class="row">
+                                                <div class="col-lg-12">
+                                                    <form id="profile_update" method="post">
+                                                        {% csrf_token %}
+                                    				    <div class="alert alert-warning" id="forgot_pwd_msg" style="display:none;">
+                                    		              <a href="#" class="close" data-dismiss="alert">&times;</a>
+                                    		              <span  id="forgot_msg"> </span>
+                                    	                </div>
+                                                        <table class="table">
+                                                            <tbody>
+                                                                <tr>
+                                                                <td>
+                                                                    <div class="md-group-add-on">
+                                                                        <span class="md-add-on">
+                                                                            <i class="icofont icofont-ui-user"></i>
+                                                                        </span>
+                                                                        <div class="md-input-wrapper">
+                                                                            <input type="text" class="md-form-control" value="{{request.user.first_name}}" placeholder="Please Enter Name" name="data[username]">
+                                                                            <input type="hidden" name="data[id]" value="">
+                                                                        </div>
+                                                                    </div>
+                                                                </td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td>
+                                                                        <div class="form-radio">
+                                                                            <div class="md-group-add-on">
+                                                                            <span class="md-add-on">
+                                                                            <i class="icofont icofont-group-students"></i>
+                                                                            </span>
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td>
+                                                                        <div class="md-group-add-on">
+                                                                        <span class="md-add-on-file">
+                                                                        <button class="btn btn-success waves-effect waves-light">File</button>
+                                                                        </span>
+                                                                        <div class="md-input-file">
+                                                                            <input type="file" class="" name="image">
+                                                                            <input type="text" class="md-form-control md-form-file">
+                                                                            <label class="md-label-file">Upload Profile Pic</label>
+                                                                            <span class="md-line"></span></div>
+                                                                            <input type="hidden" name="old_image" value="<?php echo @$profiledata[image];?>">
+                                                                        </div>
+                                                                    </td>
+                                                                </tr>
+                                                               <!--  <tr>
+                                                                   <td>
+                                                                       <div class="md-group-add-on">
+                                                                        <span class="md-add-on">
+                                                                            <i class="icofont icofont-email"></i>
+                                                                        </span>
+                                                                           <div class="md-input-wrapper">
+                                                                           <input type="email" class="md-form-control" value="{{request.user.email}}" placeholder="Enter Your Email" name="data[email]">
+                                                                               <label>Email</label>
+                                                                           </div>
+                                                                       </div>
+                                                                   </td>
+                                                               </tr> -->
+                                                                <tr>
+                                                                    <td>
+                                                                        <div class="md-group-add-on">
+                                                                         <span class="md-add-on">
+                                                                             <i class="icofont icofont-address-book"></i>
+                                                                         </span>
+                                                                            <div class="md-input-wrapper">
+                                                                        <input type="text" class="md-form-control" value="" placeholder="Enter Your address" name="data[address]" >
+                                                                               
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                </tr>
+                                                                <!-- <tr>
+                                                                    <td>
+                                                                        <div class="md-group-add-on">
+                                                                         <span class="md-add-on">
+                                                                             <i class="icofont icofont-5-star-hotel"></i>
+                                                                         </span>
+                                                                            <div class="md-input-wrapper">>
+                                                                            <option value="">Select Country</option>
+                                                                            <option value="">Select Country</option>
+                                                                        <input type="text" class="md-form-control" value="<?php echo @$profiledata[country_id]; ?>" placeholder="Enter Your country" name="data[country_id]" >
+                                                                               </select>
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                </tr> -->
+                                                                <tr>
+                                                                    <td>
+                                                                        <div class="md-group-add-on">
+                                                                         <span class="md-add-on">
+                                                                             <i class="icofont icofont-mobile-phone"></i>
+                                                                         </span>
+                                                                            <div class="md-input-wrapper">
+                                                                                <input type="number" class="md-form-control" placeholder="Enter Your Mobile Number" id="mobile"  name="data[phone_number]"   value="<?php echo @$profiledata[phone_number]; ?>">
+                                                                               <!--  <label>Mobile Number</label> -->
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td>
+                                                                        <button type="submit" class="btn btn-warning waves-effect waves-light m-r-30 update_profile" style="margin-left: 50%;">Submit</button>
+                                                                    </td>
+                                                                </tr>
+                                                            </tbody>
+                                                        </table>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane fade " id="tab2" role="tabpane">
+                    <div class="card">
+                        <div class="card-header"><h5 class="card-header-text">Change Password</h5>
+                        </div>
+                        <div class="card-block">
+                            <!-- end of view-info -->
+                            <div class="edit-info">
+                                <div class="row">
+                                    <div class="col-lg-12">
+                                        <div class="general-info">
+                                            <div class="row">
+                                                <div class="col-lg-12">
+                                                    <form id="change_password" method="post">
+                                                        <div class="form-group row">
+                                                            <label for="example-text-input" class="col-xs-3 col-form-label form-control-label">Old Password</label>
+                                                            <div class="col-sm-9">
+                                                            <input class="form-control" type="password" value="" id="" name="data2[password]">
+                                                            <input type="hidden" name="data2[id]" value="<?php echo @$profiledata[id]; ?>">
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group row">
+                                                            <label for="example-text-input" class="col-xs-3 col-form-label form-control-label">New Password</label>
+                                                            <div class="col-sm-9">
+                                                                <input class="form-control" type="password"  id="password_length" name="data2[new_pass]">
+                                                                <span id="min_char" style="color:red;text-align:center"></span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group row">
+                                                            <label for="example-text-input" class="col-xs-3 col-form-label form-control-label">Confirm Password</label>
+                                                            <div class="col-sm-9">
+                                                                <input class="form-control" type="Password"  name="confirm_pass">
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group row">
+                                                            <label for="example-text-input" class="col-xs-2 col-form-label form-control-label"></label>
+                                                            <div class="col-sm-10">
+                                                                <button type="button" class="btn btn-warning waves-effect waves-light m-r-30 change_password" style="margin-left: 50%;">Submit</button>
+                                                            </div>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
