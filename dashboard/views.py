@@ -1,5 +1,8 @@
 import os
 
+
+from django.urls import resolve
+
 from django.utils import timezone
 from django.shortcuts import render,redirect
 from django.http import HttpRequest, HttpResponse ,JsonResponse
@@ -44,7 +47,6 @@ os.makedirs(log_path,exist_ok=True)
 #@Check_SuperUser
 def Index(request):
 	context = {}
-
 	context['title'] 	 = 'Dashboard'
 	context['page_name'] = 'dashboard'
 
@@ -68,7 +70,8 @@ def Profile(request):
 @Check_Login
 def TermsConditions(request):
 	context = {}
-
+	#r_match = resolve('/dashboard/terms')
+	#print(r_match.url_name)
 	context['title'] 	 = 'Terms & Conditions'
 	context['page_name'] = 'terms'
 

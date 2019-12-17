@@ -31,7 +31,7 @@ from rest_framework.renderers import JSONRenderer, TemplateHTMLRenderer
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication, TokenAuthentication
 from .CustomAuthentication  import TokenAuthentication as TokenAuth
 from rest_framework.authtoken.models import Token
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny, IsAuthenticatedOrReadOnly
 from rest_framework.parsers import FileUploadParser, MultiPartParser
 from django.conf import settings
 
@@ -101,7 +101,8 @@ class UserAuthViewSet(viewsets.ModelViewSet):
 			if check_pass:
 				self.send['status']  = '1'
 				token = Token.objects.get_or_create(user=user)
-				self.send['message'] = "Loggedin Success"
+				self.send['message'] = "Credentials matched"
+				self.send['instruction'] = "Use the following `token` in further requests"
 				self.send['token']   = str(token[0])
 				self.authlog.info(f"Loggedin || {user}")
 			else:
@@ -129,16 +130,16 @@ class UserMViewSet(viewsets.ModelViewSet):
 	#queryset          = User.objects.all()
 	serializer_class  = UserMSerializer
 	lookup_field      = 'pk'
+	#lookup_url_kwarg  = 'username'
 	#multiple_lookup_fields  = ['username','email']
 
-
-	authentication_classes = [TokenAuth]
-	#permission_classes     = [IsAuthenticated]
+	#authentication_classes = [TokenAuth]
+	permission_classes = [IsAuthenticatedOrReadOnly]
 	#renderer_classes 	    = [JSONRenderer,TemplateHTMLRenderer]
 	parser_classes = [MultiPartParser,FileUploadParser]
 
 
-	#Tracking User Authentication
+	#Tracking user activity
 	report_name = f"{log_path}/UserModel"
 	Log = Initiate_logging(report_name,10)
 	tracking_user = Log.Track()
@@ -158,12 +159,12 @@ class UserMViewSet(viewsets.ModelViewSet):
 		self.send['data']    	 = {}
 
 
-	def get_permissions(self):
-		permission_classes = []
-		if self.action in ['create','update','partial_update','destroy']:
-			permission_classes = [IsAuthenticated]
+	# def get_permissions(self):
+	# 	permission_classes = []
+	# 	if self.action in ['create','update','partial_update','destroy']:
+	# 		permission_classes = [IsAuthenticated]
 
-		return [permission() for permission in permission_classes]
+	# 	return [permission() for permission in permission_classes]
 
 
 
@@ -173,6 +174,7 @@ class UserMViewSet(viewsets.ModelViewSet):
 
 	#Get All Users
 	def list(self,request,*args,**kwargs):
+		#queryset = get_object_or_404(self.get_queryset(),**request.query_params)
 		users = UserMSerializer(self.get_queryset(),many=True)
 		if users.data:
 			self.send['data'] = reversed(users.data)
