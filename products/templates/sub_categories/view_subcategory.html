@@ -13,7 +13,7 @@
           <p>{{ data.subcategory.created_at|date:"D d M Y" }} {{ data.subcategory.created_at|time:"H:i" }}</p><br>
           <p><img src="{{ data.subcategory.image.url }}" height="100"></p><br>
           <p style="font-size: 25px">{{data.subcategory.sub_category}} </p>
-              
+
           <p style="color: green;font-size: 20px">{{ data.subcategory.status|status }}</p>
           <p style="float: right">Last Updated : {{ data.subcategory.updated_at|date:"D d M Y" }} {{ data.subcategory.updated_at|time:"H:i" }}</p>
         </div>

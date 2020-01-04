@@ -47,10 +47,10 @@ def get_track(request):
 
 results = ''
 
-async def render_movie(movie_name):
+async def render_movie():
 	global results
 	session = AsyncHTMLSession()
-	results = await session.get(f"https://isongs.info/search/?q={movie_name}")
+	results = await session.get(f"https://isongs.info/?label=&q=nuvu+naku+nachav")
 	results.html.render()
 
 
@@ -59,7 +59,9 @@ def search_movie(request):
 	if request.method=='POST':
 		movie_name = request.POST.get('movie_name').replace(' ','+')
 
-		loop = asyncio.set_event_loop()
+		loop = asyncio.get_event_loop()
+
+		#loop.run(render_movie())
 
 		return HttpResponse(results.html.html)
 

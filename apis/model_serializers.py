@@ -110,23 +110,23 @@ class ProductsSerializer(serializers.ModelSerializer):
 class SubCategorySerializer(serializers.ModelSerializer):
 
 	created_at = serializers.DateTimeField(format="%d, %b %Y")
-	#products   = ProductsSerializer(many=True)
+	products   = ProductsSerializer(many=True)
 
 	class Meta:
 		model  = SubCategories
-		fields = ['id','sub_category','image','created_at']
+		fields = ['id','sub_category','image','created_at','products']
 
 
 class CategorySerializer(serializers.ModelSerializer):
 
-	#sub_categories = SubCategorySerializer(many=True, read_only=True)
+	sub_categories = SubCategorySerializer(many=True, read_only=True)
 	created_at 	   = serializers.DateTimeField(format="%d, %b %Y")
-	#image          = serializers.FileField(use_url=True)
-	#image_url      = serializers.SerializerMethodField()
+	image          = serializers.FileField(use_url=True)
+	image_url      = serializers.SerializerMethodField()
 
 	class Meta:
 		model  = Categories
-		fields = ['id','category_name','image','created_at']
+		fields = ['id','category_name','image','created_at','sub_categories','image','image_url']
 
 
 	def get_image_url(self, obj):

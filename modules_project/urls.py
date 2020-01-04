@@ -19,12 +19,13 @@ from django.conf.urls import url
 
 from django.conf             import settings
 from django.conf.urls.static import static
-from apis.views import UserViewSet, UserMViewSet, UserAuthViewSet
+from apis.views import UserViewSet, UserMViewSet, UserAuthViewSet,Purchase_product
 from apis.urls import router
 from rest_framework.authtoken import views
 
 #For Api's
 urlpatterns = [ url(r'^apis/', include((router.urls,"apis"),namespace="apis"))]
+urlpatterns = [ url(r'^apis/purcase', Purchase_product)]
 urlpatterns += [ url(r'^apis-authtoken/', views.obtain_auth_token)]
 
 

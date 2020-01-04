@@ -5,10 +5,11 @@ from django.shortcuts import render,redirect
 from django.http import HttpRequest, HttpResponse ,JsonResponse
 from .forms import UserRegistration, Forms_Demo
 import json
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group, Permission
 from .models import UserDetails
 from users import constants as C
-from django.contrib.auth import login as auth_login, logout, get_user
+from django.contrib.auth import login as auth_login, logout as logout_user, get_user
+from django.contrib.auth import authenticate as check_credentails
 from django.contrib.auth.hashers import check_password
 from django.contrib.sessions.models import Session
 from django.contrib import messages
@@ -88,38 +89,44 @@ def download_image(request):
 @transaction.atomic
 def register(request):
 
+	form = UserRegistration()
+
 	if request.method=='POST': #if post method then try to insert data
-		form = UserRegistration(request.POST)
+		
+		check_user = User.objects.filter(Q(username=request.POST.get('username')) | Q(email=request.POST.get('email')))
 
-		if form.is_valid():
+		if not check_user:
+			form = UserRegistration(request.POST)
 
-			if form.save(): #//if user saved then save details
-				username = form.cleaned_data.get('username')
-				user = User.objects.get(username=username)
+			if form.is_valid():
 
-				#Creating UserDetails object
-				try:
-					with transaction.atomic():
-						user_details 				= UserDetails()
-						user_details.user 			= user
-						user_details.image 			= None
-						user_details.phone_number 	= form.cleaned_data.get('phone_number')
-						user_details.address 		= 'empty'
-						user_details.auth_level 	= 1
-						user_details.device_type 	= 'website'
-						user_details.device_token 	= 'empty'
-						user_details.role 			= 'customer'
+				if form.save(): #//if user saved then save details
+					username = form.cleaned_data.get('username')
+					user = User.objects.get(username=username)
 
-						user_details.save(); #Insert data into userdetails table
+					#Creating UserDetails object
+					try:
+						with transaction.atomic():
+							user_details 				= UserDetails()
+							user_details.user 			= user
+							user_details.image 			= None
+							user_details.phone_number 	= form.cleaned_data.get('phone_number')
+							user_details.address 		= 'empty'
+							user_details.auth_level 	= 1
+							user_details.device_type 	= 'website'
+							user_details.device_token 	= 'empty'
+							user_details.role 			= 'customer'
 
-				except (IntegrityError,DatabaseError):
-					handle_exception()
+							user_details.save(); #Insert data into userdetails table
 
-				send_mail(request,user.id,'Django Account Verification','activate_account')
-				messages.info(request,"Please login here !")
-				return redirect('users:login')
-	else:
-		form = UserRegistration()
+					except (IntegrityError,DatabaseError):
+						handle_exception()
+
+					send_mail(request,user.id,'Django Account Verification','activate_account')
+					messages.info(request,"Please login here !")
+					return redirect('users:login')
+		else:
+			messages.info(request,"User already exists with same username or email")
 
 	errors = load_form_errors(form)
 	return render(request,'register.html',{'form':form,'err':errors})
@@ -132,6 +139,10 @@ def login(request):
 			return redirect('dashboard:index')
 		return redirect(settings.LOGIN_REDIRECT_URL)
 
+	if request.method == 'GET':
+		request.session['redirect_url'] = request.GET.get(settings.URL_REDIRECT_NAME)
+		#return HttpResponse(request.session.get('redirect_url'))
+
 	if request.method == 'POST':
 		username = request.POST.get('username')
 		password = request.POST.get('password')
@@ -140,9 +151,14 @@ def login(request):
 
 		if login_flag == C.AUTH_SUCCESS:
 			user = User.objects.get(username=username)
+			user.email_user('Django | Login Alert','Your Account has been accessed !')
 			auth_login(request,user)
 			if user.is_staff:
+				if request.session['redirect_url']:
+					return redirect(request.session['redirect_url'])
+
 				return redirect('dashboard:index')
+
 			return redirect(settings.LOGIN_REDIRECT_URL)
 
 	return render(request,'login.html',)
@@ -152,12 +168,13 @@ def login(request):
 @Set_RequestObject
 def logout(request):
     if request.user.is_authenticated:
-      user_id = request.user.pk
-      unexpired_sessions = Session.objects.filter(expire_date__gte=timezone.now())
-      [
-        session.delete() for session in unexpired_sessions
-        if str(user_id) == session.get_decoded().get('_auth_user_id')
-      ]
+      logout_user(request)
+      # user_id = request.user.pk
+      # unexpired_sessions = Session.objects.filter(expire_date__gte=timezone.now())
+      # [
+      #   session.delete() for session in unexpired_sessions
+      #   if str(user_id) == session.get_decoded().get('_auth_user_id')
+      # ]
       messages.success(request,"Logged out Successfully !")
       # print(request.current_app)
     return redirect('users:login')
@@ -174,11 +191,33 @@ def users_list(request):
 @Check_Login
 @CheckUser
 def dashboard(request):
-
-	# if not request.user.is_authenticated:
-	# 	return redirect('users:login')
-
 	return render(request,'dashboard.html')
+
+
+
+def generate_users_record(request,format='json'):
+	from django.core import serializers	
+	users = User.objects.all()
+	groups = Group.objects.all()
+	persmissions = Permission.objects.all()
+
+	XMLSerializer = serializers.get_serializer(format)
+	xml_serializer = XMLSerializer()
+
+	objects = {}
+
+	objects['user_data'] = xml_serializer.serialize(users)
+	objects['group_data'] = xml_serializer.serialize(groups)
+	objects['persmission_data'] = xml_serializer.serialize(persmissions)
+
+	path = 'user_db_records'
+
+	for k,v in objects.items():
+		with open(f"{path}/{k}.{format}", "w",encoding='utf-8') as file:
+			file.write(v)
+
+
+	return HttpResponse('FILES GENERATED')
 
 
 
@@ -299,7 +338,9 @@ def load_form_errors(form_obj):
 def authenticate(request,username,password):
 	try:
 		user = User.objects.get(username=username)
-		check_pass = check_password(password,user.password)
+
+		check_pass = check_credentails(username=username,password=password)
+		#check_pass = check_password(password,user.password)
 
 		if check_pass:
 			if user.is_active:

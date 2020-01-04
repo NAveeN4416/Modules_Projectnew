@@ -10,7 +10,7 @@ def  filter_status(value):
 	if value==1:
 		return 'Active'
 	else:
-		return 'InActive'	
+		return 'InActive'
 
 
 @register.filter(name='is_staff')
@@ -18,7 +18,7 @@ def  filter_staff(value):
 	if value==1:
 		return 'True'
 	else:
-		return 'False'	
+		return 'False'
 
 
 @register.filter(name="get_title")

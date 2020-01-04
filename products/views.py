@@ -25,9 +25,11 @@ from django.db.models import Q
 from django.conf import settings
 from datetime import datetime
 from django.db import IntegrityError, transaction, DatabaseError
-
+from django.contrib.auth.decorators import login_required
 from core_modules.decors import Set_RequestObject, Check_Login, Check_SuperUser
 
+
+redirect_to = settings.URL_REDIRECT_NAME
 
 #=============== Product Views =======================================================
 # Model Constants
@@ -48,8 +50,9 @@ def table_obj(table_name,ref_id):
 
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
-@Check_Login
+#@Check_Login
 #@Check_SuperUser
+@login_required(redirect_field_name=redirect_to)
 def Categories_List(request):
 
 	context = {}
@@ -64,8 +67,9 @@ def Categories_List(request):
 
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
-@Check_Login
+#@Check_Login
 #@Check_SuperUser
+@login_required(redirect_field_name=redirect_to)
 def Add_Category(request,ref_id=0):
 
 	user = request.user
@@ -101,8 +105,9 @@ def Add_Category(request,ref_id=0):
 
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
-@Check_Login
+#@Check_Login
 #@Check_SuperUser
+@login_required(redirect_field_name=redirect_to)
 def View_Category(request,ref_id=0):
 
 	context = {}
@@ -119,8 +124,9 @@ def View_Category(request,ref_id=0):
 
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
-@Check_Login
+#@Check_Login
 #@Check_SuperUser
+@login_required(redirect_field_name=redirect_to)
 def Delete_Category(request,ref_id=0):
 	user = request.user
 	if not user.has_perm('products.delete_categories',{'user':user}):
@@ -137,8 +143,9 @@ def Delete_Category(request,ref_id=0):
 
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
-@Check_Login
+#@Check_Login
 #@Check_SuperUser
+@login_required(redirect_field_name=redirect_to)
 def Add_SubCategory(request,category_id=0,ref_id=0):
 	user = request.user
 	if not user.has_perm('products.add_subcategories',{'user':user}):
@@ -177,8 +184,9 @@ def Add_SubCategory(request,category_id=0,ref_id=0):
 
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
-@Check_Login
+#@Check_Login
 #@Check_SuperUser
+@login_required(redirect_field_name=redirect_to)
 def View_SubCategory(request,ref_id=0):
 	subcategory = SubCategories.objects.get(pk=ref_id) 
 	products    = Products.objects.filter(subcategory=subcategory)
@@ -194,8 +202,9 @@ def View_SubCategory(request,ref_id=0):
 
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
-@Check_Login
+#@Check_Login
 #@Check_SuperUser
+@login_required(redirect_field_name=redirect_to)
 def Delete_SubCategory(request,ref_id=0):
 	user = request.user
 	if not user.has_perm('products.delete_subcategories',{'user':user}):
@@ -209,8 +218,9 @@ def Delete_SubCategory(request,ref_id=0):
 
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
-@Check_Login
+#@Check_Login
 #@Check_SuperUser
+@login_required(redirect_field_name=redirect_to)
 def Products_List(request):
 	context = {}
 	context['title'] 	 = 'Products List'
@@ -220,8 +230,9 @@ def Products_List(request):
 
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
-@Check_Login
+#@Check_Login
 #@Check_SuperUser
+@login_required(redirect_field_name=redirect_to)
 def Add_Product(request,subcategory_id=0,ref_id=0):
 	sub_category = table_obj('subcategories',subcategory_id)
 	product      = table_obj('products',ref_id)
@@ -274,15 +285,17 @@ def Add_Product(request,subcategory_id=0,ref_id=0):
 
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
-@Check_Login
+#@Check_Login
 #@Check_SuperUser
+@login_required(redirect_field_name=redirect_to)
 def View_Product(request,product_id=0):
 	return HttpResponse("Hello")
 
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
-@Check_Login
+#@Check_Login
 #@Check_SuperUser
+@login_required(redirect_field_name=redirect_to)
 def Delete_Product(request,product_id=0):
 	user = request.user
 	if not user.has_perm('products.delete_products',{'user':user}):

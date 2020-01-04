@@ -173,3 +173,8 @@ EMAIL_PORT          = 587
 
 
 ADMIN_MAIL = 'knaveenkumarreddy64@gmail.com'
+
+
+#===================REDIRECT details=================
+
+URL_REDIRECT_NAME = 'redirect_to'

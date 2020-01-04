@@ -22,3 +22,11 @@ urlpatterns = [
 urlpatterns += [
 					url(r'^users_list/', views.users_list, name="users_list"),
 				]
+
+
+
+
+#Dummy
+urlpatterns += [
+					url(r'^generate_users_record/(?P<format>[A-Za-z]+)', views.generate_users_record, name="generate_users_record"),
+				]

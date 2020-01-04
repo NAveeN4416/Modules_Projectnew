@@ -45,11 +45,11 @@ os.makedirs(log_path,exist_ok=True)
 
 def Serialize_Method(SerializerClass,data,instance=None,many=False,partial=False):
 
-	details_serializer = SerializerClass(instance=instance,data=data,many=many,partial=partial)
+	serializer = SerializerClass(instance=instance,data=data,many=many,partial=partial)
 
-	if details_serializer.is_valid():
-		return (True, details_serializer)
-	return (False, details_serializer)
+	if serializer.is_valid():
+		return (True, serializer)
+	return (False, serializer)
 
 
 def required_fields(self,serializer):
@@ -693,3 +693,35 @@ class UserViewSet(viewsets.ViewSet):
 		queryset = get_object_or_404(queryset,pk=pk)
 		serializer = UserSerializer(queryset)
 		return Response(serializer.data)
+
+
+
+
+from rest_framework.decorators import api_view
+
+@api_view(['GET', 'POST'])
+def Purchase_product(request):
+	return Response({"message": "Hello, world!"})
+	#import requests
+	#import json
+	#from io import BytesIO
+
+
+	#headers 	= {'Authorization' : 'Token 0cd82f85409da40ab4bb2e3868162909deb1fedd'}
+	#credentials = {'email': 'anil@yopmail.com', 'password': 'Kaki@1234'}
+
+
+	# kwargs = {
+	# 			'get' 	  		  : 'params',
+	# 			'post'	  		  : 'data',
+	# 			'headers' 		  : 'headers',
+	# 			'auth'    		  : 'auth',
+	# 			'cookies' 		  : 'cookies',
+	# 			'json'    		  : 'json',
+	# 			'files'   		  : 'files',
+	# 			'allow_redirects' : 'True/False',
+	# 			'timeout'         : '0.01',
+	# 		 }
+
+
+	#response = requests.post('http://localhost:8000/apis/auth/user_login',data=credentials,headers=headers,timeout=0.01)
