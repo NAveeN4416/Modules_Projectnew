@@ -9,7 +9,7 @@ from django.contrib.auth.models import User, Group, Permission
 from .models import UserDetails
 from users import constants as C
 from django.contrib.auth import login as auth_login, logout as logout_user, get_user
-from django.contrib.auth import authenticate as check_credentails
+from django.contrib.auth import authenticate
 from django.contrib.auth.hashers import check_password
 from django.contrib.sessions.models import Session
 from django.contrib import messages
@@ -63,8 +63,8 @@ def forms_demo(request):
 
 def download_image(request):
 
-	user = UserDetails.objects.get(pk=27)
-
+	user = UserDetails.objects.get(user_id=10)
+	#return HttpResponse(user.image.name)
 	try:
 		file_name = os.path.basename(user.image.name)
 		response = HttpResponse(user.image, content_type='image/png')
@@ -147,7 +147,8 @@ def login(request):
 		username = request.POST.get('username')
 		password = request.POST.get('password')
 
-		login_flag = authenticate(request,username,password)
+		login_flag = check_credentails(request,username,password)
+
 
 		if login_flag == C.AUTH_SUCCESS:
 			user = User.objects.get(username=username)
@@ -195,7 +196,7 @@ def dashboard(request):
 
 
 
-def generate_users_record(request,format='json'):
+def generate_users_record(request,format='xml'):
 	from django.core import serializers	
 	users = User.objects.all()
 	groups = Group.objects.all()
@@ -335,21 +336,22 @@ def load_form_errors(form_obj):
 	return errors
 
 
-def authenticate(request,username,password):
+def check_credentails(request,username,password):
 	try:
 		user = User.objects.get(username=username)
 
-		check_pass = check_credentails(username=username,password=password)
-		#check_pass = check_password(password,user.password)
+		if user.is_active:
+			check_pass = authenticate(username=username,password=password)
+			#check_pass = check_password(password,user.password)
 
-		if check_pass:
-			if user.is_active:
+			if check_pass:
 				return C.AUTH_SUCCESS
-			messages.warning(request,C.ACCOUNT_INACTIVE)
-			return C.USER_INACTIVE
-		else:
-			messages.warning(request,C.INVALID_PASSWORD)
-			return C.INCORRECT_PASSWORD
+			else:
+				messages.warning(request,C.INVALID_PASSWORD)
+				return C.INCORRECT_PASSWORD
+
+		messages.warning(request,C.ACCOUNT_INACTIVE)
+		return C.USER_INACTIVE
 
 	except User.DoesNotExist:
 		messages.info(request,C.USERNOT_FOUND)

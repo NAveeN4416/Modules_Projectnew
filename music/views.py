@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
 from .models import Industry, Artist, Album, Track
 
-from requests_html import HTML, HTMLSession,AsyncHTMLSession
+from requests_html_test import HTML, HTMLSession,AsyncHTMLSession
 from threading import Thread
 import requests
 import  os
@@ -59,10 +59,11 @@ def search_movie(request):
 	if request.method=='POST':
 		movie_name = request.POST.get('movie_name').replace(' ','+')
 
+		loop = asyncio.new_event_loop()
+		asyncio.set_event_loop(loop)
 		loop = asyncio.get_event_loop()
-
-		#loop.run(render_movie())
-
+		loop.run_until_complete(render_movie())
+		asyncio.sleep(10)
 		return HttpResponse(results.html.html)
 
 	return render(request,'site/search_form.html')

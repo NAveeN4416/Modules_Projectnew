@@ -9,7 +9,7 @@
     # versioning_class = api_settings.DEFAULT_VERSIONING_CLASS
 
 
-
+from .Base import BaseView
 import os
 from log_controller import Initiate_logging
 from django.shortcuts import render
@@ -27,84 +27,54 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from .model_serializers import UserSerializer, UserMSerializer, UserdetailsSerializer, CategorySerializer, SubCategorySerializer, ProductsSerializer
 from rest_framework import viewsets
+from .CustomViewsets import ThrottledViewSet
 from rest_framework.renderers import JSONRenderer, TemplateHTMLRenderer
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication, TokenAuthentication
 from .CustomAuthentication  import TokenAuthentication as TokenAuth
 from rest_framework.authtoken.models import Token
 from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny, IsAuthenticatedOrReadOnly
 from rest_framework.parsers import FileUploadParser, MultiPartParser
+from rest_framework.throttling import UserRateThrottle
+from .CustomExceptions import CustomThrottled_Exception
 from django.conf import settings
+import asyncio
 
 
-#Create a log path for this file
-file_name = __name__.split('.')
-file_path = '/'.join(file_name)
-log_path  = f"logs/{file_path}/"
-os.makedirs(log_path,exist_ok=True)
 
-
-def Serialize_Method(SerializerClass,data,instance=None,many=False,partial=False):
-
-	serializer = SerializerClass(instance=instance,data=data,many=many,partial=partial)
-
-	if serializer.is_valid():
-		return (True, serializer)
-	return (False, serializer)
-
-
-def required_fields(self,serializer):
-	validation_rules = {}
-	errors = {}
-
-	for key, value in  serializer.fields.items():
-		validation_rules[key] = value.error_messages
-
-	for key, value in serializer.errors.items():
-		errors[key] = value[0]
-
-	self.send['errors'] = errors
-	#self.send['validation_rules'] = validation_rules
-
-
-class UserAuthViewSet(viewsets.ModelViewSet):
+class UserAuthViewSet(BaseView,viewsets.ModelViewSet):
 
 	queryset = User.objects.all()
 	serializer_class = UserMSerializer
-	#authentication_classes = [TokenAuth]
-
-	#Tracking User Authentication
-	report_name = f"{log_path}/Authentication"
-	Log = Initiate_logging(report_name,10)
-	authlog = Log.Track()
 
 
 	#===Constructor============================
 	def __init__(self,*args,**kwargs):
 		super().__init__(*args,**kwargs)
-		self.send    = {}
-		self.send['status']  = '0'
-		self.send['message'] = "User Not found!"
 
 
-
-	@action(detail=False,methods=['post'],url_name="user_login")
-	def user_login(self,request):
+	@action(detail=False,methods=['post'],url_name="login")
+	def login(self,request):
 
 		email    = request.data.get('email',None)
 		mobile   = request.data.get('mobile',None)
 		password = request.data.get('password',None)
 
-		user = User.objects.get(Q(username=email) | Q(email=email))
+		try:
+			user = User.objects.get(Q(username=email) | Q(email=email))
+		except User.DoesNotExist as e:
+			self.send['message'] = "User not found!"
+			return Response(self.send)
+
 		if user :
 			check_pass = check_password(password,user.password)
 
 			if check_pass:
-				self.send['status']  = '1'
+				self.send['status']  = 1
 				token = Token.objects.get_or_create(user=user)
 				self.send['message'] = "Credentials matched"
 				self.send['instruction'] = "Use the following `token` in further requests"
 				self.send['token']   = str(token[0])
-				self.authlog.info(f"Loggedin || {user}")
+				self.log.info(f"Loggedin || {user}")
 			else:
 				self.send['message'] = "Password is incorrect"
 		else:
@@ -113,68 +83,50 @@ class UserAuthViewSet(viewsets.ModelViewSet):
 		return Response(self.send)
 
 
-	@action(detail=False,methods=['get'],url_name="user_logout")
-	def user_logout(self,request):
+	@action(detail=False,methods=['get'],url_name="logout")
+	def logout(self,request):
 		if request.user.is_authenticated:
 			user = request.user
 			user.auth_token.delete()
-			self.authlog.info(f"LoggedOut || {user} !")
-			self.send['status']  = '1'
+			self.log.info(f"LoggedOut || {user} !")
+			self.send['status']  = 1
 			self.send['message'] = "Logged Out Successfully !"
 
 		return Response(self.send)
 
 
-class UserMViewSet(viewsets.ModelViewSet):
 
-	#queryset          = User.objects.all()
+class OncePerDayUserThrottle(UserRateThrottle):
+        rate = '1/day'
+
+
+class UserMViewSet(BaseView,ThrottledViewSet):
+
+	queryset          = User.objects.exclude(username='admin')
 	serializer_class  = UserMSerializer
 	lookup_field      = 'pk'
-	#lookup_url_kwarg  = 'username'
-	#multiple_lookup_fields  = ['username','email']
+	multiple_lookup_fields  = ['email','username']
 
 	#authentication_classes = [TokenAuth]
-	permission_classes = [IsAuthenticatedOrReadOnly]
+	#permission_classes = [IsAuthenticated,IsAuthenticatedOrReadOnly]
 	#renderer_classes 	    = [JSONRenderer,TemplateHTMLRenderer]
+	#throttle_classes =  [OncePerDayUserThrottle]
 	parser_classes = [MultiPartParser,FileUploadParser]
+	throttled_exception_class = CustomThrottled_Exception
 
 
-	#Tracking user activity
-	report_name = f"{log_path}/UserModel"
-	Log = Initiate_logging(report_name,10)
-	tracking_user = Log.Track()
-
+	def get_throttled_message(self, request):
+		return "request limit exceeded"
 
 	#===Constructor============================
 	def __init__(self,*args,**kwargs):
 		super().__init__(*args,**kwargs)
-		self.send    = {}
-		self.details = {}
-		self.request = None
-
-		#Default
-		self.send['status']  	 = '0'
-		#self.send['status_code'] = 200
-		self.send['message'] 	 = "User Not found!"
-		self.send['data']    	 = {}
-
-
-	# def get_permissions(self):
-	# 	permission_classes = []
-	# 	if self.action in ['create','update','partial_update','destroy']:
-	# 		permission_classes = [IsAuthenticated]
-
-	# 	return [permission() for permission in permission_classes]
-
-
-
-	def get_queryset(self):
-		return User.objects.exclude(username='admin')
 
 
 	#Get All Users
 	def list(self,request,*args,**kwargs):
 		#queryset = get_object_or_404(self.get_queryset(),**request.query_params)
+		self.request = request
 		users = UserMSerializer(self.get_queryset(),many=True)
 		if users.data:
 			self.send['data'] = reversed(users.data)
@@ -195,15 +147,14 @@ class UserMViewSet(viewsets.ModelViewSet):
 				self.send['data']  = user.data
 				return self.Send_Response()
 
-
 	#Create user
 	def create(self,request):
 		message = "Invalid data submitted !"
 
 		#Details Table Serialization & Validation
-		status, details_serializer = Serialize_Method(UserdetailsSerializer,request.data)
+		status, details_serializer = self.Serialize_Method(UserdetailsSerializer,request.data)
 		if not status:
-			required_fields(self,details_serializer)
+			self.required_fields(details_serializer)
 			return self.Send_Response(message=message,status=0)
 
 		data = request.data.copy()
@@ -214,15 +165,15 @@ class UserMViewSet(viewsets.ModelViewSet):
 			data.update({'date_joined':datetime.now()})
 
 			#Users Table Serialization & Validation
-			status, serializer = Serialize_Method(UserMSerializer,data)
+			status, serializer = self.Serialize_Method(UserMSerializer,data)
 			if status:
 				#Saving both tables data one/one
 				user_instance = serializer.save()
 				details_instance = details_serializer.save(user=user_instance)
-				self.tracking_user.info(f"{request.user} created {user_instance} - {user_instance.pk}!")
+				self.log.info(f"{request.user} created {user_instance} - {user_instance.pk}!")
 				message = C.USERCREATED; status = 1
 			else:
-				required_fields(self,serializer)
+				self.required_fields(serializer)
 				status = 0
 		else:
 			message = C.USERALREADYEXIST; status = 0
@@ -232,7 +183,7 @@ class UserMViewSet(viewsets.ModelViewSet):
 
 	#Update User
 	def update(self,request,pk=0,format='json'):
-		self.tracking_user.info(f"{request.user} || Record-{pk} || Updated!")
+		self.log.info(f"{request.user} || Record-{pk} || Updated!")
 		return self.Send_Response(message = 'Update Checking !')
 
 
@@ -246,22 +197,29 @@ class UserMViewSet(viewsets.ModelViewSet):
 		except User.DoesNotExist:
 			return self.Send_Response(message='User Not found!',status=0)
 		else:
-			status, serializer = Serialize_Method(UserMSerializer,request.data,instance=user,partial=True)
+			status, serializer = self.Serialize_Method(UserMSerializer,request.data,instance=user,partial=True)
 			if status:
 				user_instance = serializer.save()
+			else:
+				user_instance = user
+				self.required_fields(serializer) #Append serializer errors to response
+				return self.Send_Response(message="Bad Request",status=0)
 
 			#if user found update userdetails in data presence
 			user_details = UserDetails.objects.filter(user=user)
 			if user_details:
 				user_details = user_details[0]
 
-				status, details_serializer = Serialize_Method(UserdetailsSerializer,request.data,instance=user_details,partial=True)
+				status, details_serializer = self.Serialize_Method(UserdetailsSerializer,request.data,instance=user_details,partial=True)
 				if status:
 					details_instance = details_serializer.save()
+				else:
+					self.required_fields(details_serializer) #Append serializer errors to response
+					return self.Send_Response(message="Bad Request",status=0)
 
 			if user_instance or details_serializer:
 				message = f"{user_instance} updated Successfully :)"
-				self.tracking_user.info(f"{request.user} updated {user} - {user.pk}!")
+				self.log.info(f"{request.user} updated {user} - {user.pk}!")
 				return self.Send_Response(message=message)
 
 		return self.Send_Response(message="Details not found !",status=0)
@@ -273,7 +231,7 @@ class UserMViewSet(viewsets.ModelViewSet):
 			users = self.get_queryset()
 			user  = users.get(pk=pk)
 			user.delete()
-			self.tracking_user.info(f"{request.user} deleted {user} - {pk}!")
+			self.log.info(f"{request.user} deleted {user} - {pk}!")
 			return self.Send_Response(message=f"{user} was deleted Successfully :)")
 		except User.DoesNotExist:
 			return self.Send_Response(message='User Not found!',status=0)
@@ -294,17 +252,43 @@ class UserMViewSet(viewsets.ModelViewSet):
 		return self.Send_Response(message=message,status=status)
 
 
-	#////////////////Helping Methods///////////////
-	def Send_Response(self,message='Success',status=1,status_code=200):
-		#self.send['status_code'] = status_code
-		self.send['status']  	 = status
-		self.send['message'] 	 = message
 
-		return Response(self.send)
+
+	def filter_queryset(self,queryset,filter_fields):
+		query = Q()
+
+		for field, value in filter_fields.items():
+			query |= Q(f"{field}={value}")
+		return queryset.filter(query)
+
+
+	def get_permissions(self):
+	 	permission_classes = []
+	 	if self.action in ['create','update','partial_update','destroy']:
+	 		permission_classes = [IsAuthenticated]
+
+	 	return [permission() for permission in permission_classes]
+
+
+	def get_queryset(self):
+		queryset = User.objects.exclude(username='admin')
+
+		query_params = self.request.query_params
+		filter_fields = {}
+		for field in self.multiple_lookup_fields:
+			if query_params.get(field):
+				filter_fields[field] = query_params.get(field)
+		print(filter_fields)
+		if filter_fields:
+			queryset = queryset.filter(**filter_fields)
+
+		return queryset
+
+
 
 #------------------------------------- Category View Set -------------------------------------------
 
-class CategoryViewSet(viewsets.ModelViewSet):
+class CategoryViewSet(BaseView,viewsets.ModelViewSet):
 
 	queryset         	   = Categories.objects.filter(status=1)
 	serializer_class 	   = CategorySerializer
@@ -313,23 +297,9 @@ class CategoryViewSet(viewsets.ModelViewSet):
 	#permission_classes     = [IsAuthenticated]
 	#renderer_classes 	    = [JSONRenderer,TemplateHTMLRenderer]
 
-
-	#Tracking User Authentication
-	report_name = f"{log_path}/CategoryModel"
-	Log = Initiate_logging(report_name,10)
-	product_log = Log.Track()
-
-
 	#===Constructor=====================
 	def __init__(self,*args,**kwargs):
 		super().__init__(*args,**kwargs)
-		self.send    = {}
-		self.details = {}
-		self.request = None
-
-		self.send['status']  = '0'
-		self.send['message'] = "Data Not found!"
-		self.send['data']    = {}
 
 
 	def list(self,request,format="json"):
@@ -338,10 +308,11 @@ class CategoryViewSet(viewsets.ModelViewSet):
 		self.send['data'] = category_serializer.data
 
 		if self.send['data']:
-			self.send['status']  = '1' 
+			self.send['status']  = 1
 			self.send['message'] = "Success" 
 
 		return Response(self.send)
+		#return Response(request.META)
 
 
 	def retrieve(self,request,pk=0):
@@ -352,7 +323,7 @@ class CategoryViewSet(viewsets.ModelViewSet):
 			self.send['data'] = category_serializer.data
 
 		if self.send['data']:
-			self.send['status']  = '1' 
+			self.send['status']  = 1 
 			self.send['message'] = "Success"
 
 		return Response(self.send)
@@ -371,7 +342,7 @@ class CategoryViewSet(viewsets.ModelViewSet):
 		self.send['data'] = subcategory_serializer.data
 
 		if self.send['data']:
-			self.send['status']  = '1' 
+			self.send['status']  = 1 
 			self.send['message'] = "Success" 
 
 		return Response(self.send)
@@ -395,7 +366,7 @@ class CategoryViewSet(viewsets.ModelViewSet):
 		self.send['data'] = data
 
 		if data:
-			self.send['status']  = '1' 
+			self.send['status']  = 1 
 			self.send['message'] = "Success"
 
 		return Response(self.send)
@@ -418,7 +389,7 @@ class CategoryViewSet(viewsets.ModelViewSet):
 		return Response(self.send)
 
 
-class ReadCategoryViewSet(viewsets.ReadOnlyModelViewSet):
+class ReadCategoryViewSet(BaseView,viewsets.ReadOnlyModelViewSet):
 
 	queryset         	   = Categories.objects.filter(status=1)
 	serializer_class 	   = CategorySerializer
@@ -428,23 +399,9 @@ class ReadCategoryViewSet(viewsets.ReadOnlyModelViewSet):
 	#renderer_classes 	    = [JSONRenderer,TemplateHTMLRenderer]
 
 
-	#Tracking User Authentication
-	report_name = f"{log_path}/CategoryModel"
-	Log = Initiate_logging(report_name,10)
-	product_log = Log.Track()
-
-
 	#===Constructor=====================
 	def __init__(self,*args,**kwargs):
 		super().__init__(*args,**kwargs)
-		self.send    = {}
-		self.details = {}
-		self.request = None
-
-		self.send['status']  = '0'
-		self.send['message'] = "Data Not found!"
-		self.send['data']    = {}
-		print(kwargs)
 
 
 	def list(self,request,format="json"):
@@ -453,7 +410,7 @@ class ReadCategoryViewSet(viewsets.ReadOnlyModelViewSet):
 		self.send['data'] = category_serializer.data
 
 		if self.send['data']:
-			self.send['status']  = '1' 
+			self.send['status']  = 1 
 			self.send['message'] = "Success" 
 
 		return Response(self.send)
@@ -467,7 +424,7 @@ class ReadCategoryViewSet(viewsets.ReadOnlyModelViewSet):
 			self.send['data'] = category_serializer.data
 
 		if self.send['data']:
-			self.send['status']  = '1' 
+			self.send['status']  = 1
 			self.send['message'] = "Success"
 
 		return Response(self.send)
@@ -486,7 +443,7 @@ class ReadCategoryViewSet(viewsets.ReadOnlyModelViewSet):
 		self.send['data'] = subcategory_serializer.data
 
 		if self.send['data']:
-			self.send['status']  = '1' 
+			self.send['status']  = 1
 			self.send['message'] = "Success" 
 
 		return Response(self.send)
@@ -509,14 +466,14 @@ class ReadCategoryViewSet(viewsets.ReadOnlyModelViewSet):
 		self.send['data'] = data
 
 		if data:
-			self.send['status']  = '1' 
+			self.send['status']  = 1
 			self.send['message'] = "Success"
 
 		return Response(self.send)
 
 #-------------------------------------Sub Categgory View Set -------------------------------------------
 
-class SubCategoryViewSet(viewsets.ModelViewSet):
+class SubCategoryViewSet(BaseView,viewsets.ModelViewSet):
 
 	queryset         	   = SubCategories.objects.filter(status=1)
 	serializer_class 	   = SubCategorySerializer
@@ -525,23 +482,9 @@ class SubCategoryViewSet(viewsets.ModelViewSet):
 	#permission_classes     = [IsAuthenticated]
 	#renderer_classes 	    = [JSONRenderer,TemplateHTMLRenderer]
 
-
-	#Tracking User Authentication
-	report_name = f"{log_path}/CategoryModel"
-	Log = Initiate_logging(report_name,10)
-	product_log = Log.Track()
-
-
 	#===Constructor=====================
 	def __init__(self,*args,**kwargs):
 		super().__init__(*args,**kwargs)
-		self.send    = {}
-		self.details = {}
-		self.request = None
-
-		self.send['status']  = 0
-		self.send['message'] = "Data Not found!"
-		self.send['data']    = {}
 
 
 	def list(self,request):
@@ -551,7 +494,7 @@ class SubCategoryViewSet(viewsets.ModelViewSet):
 		self.send['data'] = subcategory_serializer.data
 
 		if self.send['data']:
-			self.send['status']  = '1' 
+			self.send['status']  = 1 
 			self.send['message'] = "Success" 
 
 		return Response(self.send)
@@ -565,7 +508,7 @@ class SubCategoryViewSet(viewsets.ModelViewSet):
 			self.send['data'] = subcategory_serializer.data
 
 		if self.send['data']:
-			self.send['status']  = '1' 
+			self.send['status']  = 1 
 			self.send['message'] = "Success" 
 
 		return Response(self.send)
@@ -580,7 +523,7 @@ class SubCategoryViewSet(viewsets.ModelViewSet):
 		self.send['data'] = product_serializer.data
 
 		if self.send['data']:
-			self.send['status']  = '1' 
+			self.send['status']  = 1 
 			self.send['message'] = "Success" 
 
 		return Response(self.send)
@@ -604,7 +547,7 @@ class SubCategoryViewSet(viewsets.ModelViewSet):
 
 #------------------------------------- Products View Set -------------------------------------------
 
-class ProductsViewSet(viewsets.ModelViewSet):
+class ProductsViewSet(BaseView,viewsets.ModelViewSet):
 
 	queryset         	   = Products.objects.filter(status=1)
 	serializer_class 	   = ProductsSerializer
@@ -614,22 +557,9 @@ class ProductsViewSet(viewsets.ModelViewSet):
 	#renderer_classes 	    = [JSONRenderer,TemplateHTMLRenderer]
 
 
-	#Tracking User Authentication
-	report_name = f"{log_path}/ProductModel"
-	Log = Initiate_logging(report_name,10)
-	product_log = Log.Track()
-
-
 	#===Constructor=====================
 	def __init__(self,*args,**kwargs):
 		super().__init__(*args,**kwargs)
-		self.send    = {}
-		self.details = {}
-		self.request = None
-
-		self.send['status']  = '0'
-		self.send['message'] = "Data Not found!"
-		self.send['data']    = {}
 
 
 	def list(self,request):
@@ -639,7 +569,7 @@ class ProductsViewSet(viewsets.ModelViewSet):
 		self.send['data'] = product_serializer.data
 
 		if self.send['data']:
-			self.send['status']  = '1' 
+			self.send['status']  = 1 
 			self.send['message'] = "Success" 
 
 		return Response(self.send)
@@ -653,7 +583,7 @@ class ProductsViewSet(viewsets.ModelViewSet):
 			self.send['data'] = product_serializer.data
 
 		if self.send['data']:
-			self.send['status']  = '1'
+			self.send['status']  = 1
 			self.send['message'] = "Success"
 
 		return Response(self.send)
@@ -699,9 +629,30 @@ class UserViewSet(viewsets.ViewSet):
 
 from rest_framework.decorators import api_view
 
+results = 0
+
+
+
+
+
 @api_view(['GET', 'POST'])
 def Purchase_product(request):
-	return Response({"message": "Hello, world!"})
+
+	async def check_asyncio():
+		global results
+		results = 10
+		await asyncio.sleep(10)
+
+	async def main():
+		task = asyncio.create_task(check_asyncio())
+		await task
+
+	loop = asyncio.new_event_loop()
+	asyncio.set_event_loop(loop)
+	loop = asyncio.get_event_loop()
+	t = loop.run_until_complete(main())
+	return Response({"message": results})
+
 	#import requests
 	#import json
 	#from io import BytesIO
@@ -725,3 +676,6 @@ def Purchase_product(request):
 
 
 	#response = requests.post('http://localhost:8000/apis/auth/user_login',data=credentials,headers=headers,timeout=0.01)
+
+
+

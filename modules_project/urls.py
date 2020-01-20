@@ -25,7 +25,6 @@ from rest_framework.authtoken import views
 
 #For Api's
 urlpatterns = [ url(r'^apis/', include((router.urls,"apis"),namespace="apis"))]
-urlpatterns = [ url(r'^apis/purcase', Purchase_product)]
 urlpatterns += [ url(r'^apis-authtoken/', views.obtain_auth_token)]
 
 
@@ -43,6 +42,7 @@ urlpatterns += [
 urlpatterns += [
                     url(r'^as_views/users/$', UserViewSet.as_view({'get':'list'})),
                     url(r'^as_views/users/(?P<pk>[^/.]+)/', UserViewSet.as_view({'get':'retrieve'})),
+                    url(r'^user/purchase', Purchase_product),
                 ]
 
 

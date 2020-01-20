@@ -22,7 +22,7 @@ class UserSerializer(serializers.Serializer):
 
 
 	def update(self, instance, validated_data):
-		instance.username   = validated_data.get('email',instance.email)
+		instance.email   = validated_data.get('email',instance.email)
 		instance.first_name = validated_data.get('first_name',instance.first_name)
 		instance.last_name  = validated_data.get('last_name',instance.last_name)
 		instance.is_staff   = validated_data.get('is_staff',instance.is_staff)
@@ -44,6 +44,7 @@ class UserdetailsSerializer(serializers.ModelSerializer):
 	class Meta:
 		model  = UserDetails
 		fields = ['image','phone_number','address','device_type','device_token','role','user_id']
+		extra_kwargs = {'phone_number': {'required': True}}
 
 
 	def create(self,validated_data):
@@ -71,9 +72,8 @@ class UserMSerializer(serializers.ModelSerializer):
 
 	class Meta:
 	 	model  = User
-	 	fields = ['id','username','password','first_name','last_name','email','date_joined','user_details'] #'__all__' #
+	 	fields = ['id','username','first_name','last_name','email','date_joined','user_details'] #'__all__' #
 	 	#fields = '__all__'
-	 	extra_kwargs = {'password': {'write_only': True}}
 
 
 	def create(self,validated_data):
@@ -85,7 +85,10 @@ class UserMSerializer(serializers.ModelSerializer):
 
 	def update(self,instance,validated_data):
 		user = User.objects.filter(id=instance.pk)
-		user.update(**validated_data)
+		user.email   = validated_data.get('email',instance.email)
+		user.first_name = validated_data.get('first_name',instance.first_name)
+		user.last_name  = validated_data.get('last_name',instance.last_name)
+		user.update()
 		return User.objects.get(id=instance.pk)
 
 

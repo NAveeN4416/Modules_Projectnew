@@ -47,15 +47,6 @@ INSTALLED_APPS = [
                 ]
 
 
-#REST FRAMEWORK DEFAULTS
-REST_FRAMEWORK = {
-                    'DEFAULT_AUTHENTICATION_CLASSES': [
-                                                        #'rest_framework.authentication.TokenAuthentication',
-                                                        #'apis.CustomAuthentication.TokenAuthentication', # Custom Changes
-                                                      ]
-                }
-
-
 MIDDLEWARE = [
                 'django.middleware.security.SecurityMiddleware',
                 'django.contrib.sessions.middleware.SessionMiddleware',
@@ -178,3 +169,25 @@ ADMIN_MAIL = 'knaveenkumarreddy64@gmail.com'
 #===================REDIRECT details=================
 
 URL_REDIRECT_NAME = 'redirect_to'
+
+
+
+
+
+
+
+#*************************API's*******************************
+
+
+#REST FRAMEWORK DEFAULTS
+REST_FRAMEWORK = {
+                    'DEFAULT_AUTHENTICATION_CLASSES': [
+                                                        #'rest_framework.authentication.TokenAuthentication',
+                                                        #'apis.CustomAuthentication.TokenAuthentication', # Custom Changes
+                                                      ],
+                    'EXCEPTION_HANDLER': 'apis.CustomException_Handler.custom_exception_handler'
+                }
+
+
+#Logging path for api's
+API_LOGGING_ROOT = "logs/apis/"
