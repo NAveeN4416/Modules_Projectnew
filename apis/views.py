@@ -107,7 +107,7 @@ class UserMViewSet(BaseView,ThrottledViewSet):
 	lookup_field      = 'pk'
 	multiple_lookup_fields  = ['email','username']
 
-	#authentication_classes = [TokenAuth]
+	authentication_classes = [TokenAuth]
 	#permission_classes = [IsAuthenticated,IsAuthenticatedOrReadOnly]
 	#renderer_classes 	    = [JSONRenderer,TemplateHTMLRenderer]
 	#throttle_classes =  [OncePerDayUserThrottle]
