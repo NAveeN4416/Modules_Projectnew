@@ -12,7 +12,7 @@ def custom_exception_handler(exc, context):
     if isinstance(exc,CustomThrottled_Exception):
     	response_data =	{
                             'status': response.status_code,
-                            'message': "Sorry Request limit crossed !",
+                            'message': "Request limit crossed !, Please try again later",
                             'data': {}
                         };
     	response.data = response_data
@@ -21,7 +21,7 @@ def custom_exception_handler(exc, context):
     if isinstance(exc,MethodNotAllowed):
         response_data = {
                             'status': response.status_code,
-                            'message': f"This method not allowed for this API",
+                            'message': f"This method is not allowed on this request",
                             'data': {}
                         };
 
@@ -31,7 +31,7 @@ def custom_exception_handler(exc, context):
     if isinstance(exc,PermissionDenied):
         response_data = {
                             'status': response.status_code,
-                            'message': "You don't have permissions for this action",
+                            'message': "You don't have permission for this action",
                             'data': {}
                         };
         response.data = response_data

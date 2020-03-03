@@ -8,8 +8,7 @@ import json
 from django.contrib.auth.models import User, Group, Permission
 from .models import UserDetails
 from users import constants as C
-from django.contrib.auth import login as auth_login, logout as logout_user, get_user
-from django.contrib.auth import authenticate
+from django.contrib.auth import login as auth_login, logout as logout_user, get_user, authenticate
 from django.contrib.auth.hashers import check_password
 from django.contrib.sessions.models import Session
 from django.contrib import messages
@@ -157,11 +156,8 @@ def login(request):
 			if user.is_staff:
 				if request.session['redirect_url']:
 					return redirect(request.session['redirect_url'])
-
 				return redirect('dashboard:index')
-
 			return redirect(settings.LOGIN_REDIRECT_URL)
-
 	return render(request,'login.html',)
 
 
@@ -197,7 +193,7 @@ def dashboard(request):
 
 
 def generate_users_record(request,format='xml'):
-	from django.core import serializers	
+	from django.core import serializers
 	users = User.objects.all()
 	groups = Group.objects.all()
 	persmissions = Permission.objects.all()

@@ -12,6 +12,7 @@ class BaseView(object):
     unique_name = None
 
     """docstring for BaseView"""
+
     def __init_subclass__(cls,default_name=None, **kwargs):
         super().__init_subclass__(**kwargs)
         
@@ -67,6 +68,10 @@ class BaseView(object):
         if serializer.is_valid():
             return (True, serializer)
         return (False, serializer)
+
+
+    def UserDoesNotExist(self):
+        return self.Send_Response(message='User Not found!',status=0)
 
 
     def Send_Response(self,message='Success',status=1,status_code=200):

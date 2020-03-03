@@ -9,37 +9,41 @@
     # versioning_class = api_settings.DEFAULT_VERSIONING_CLASS
 
 
-from .Base import BaseView
+
 import os
+import asyncio
 from log_controller import Initiate_logging
-from django.shortcuts import render
-from django.contrib.auth.models import User
 from users.models import UserDetails
 from products.models import Categories, SubCategories, Products, ProductImages
-from django.http import HttpResponse, JsonResponse
+from apis import constants as C
+from .Base import BaseView
+
+
+from django.contrib.auth.models import User
+from django.shortcuts import render
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from datetime import datetime
 from django.db.models import Q
 from django.contrib.auth.hashers import check_password
-from apis import constants as C
+from django.conf import settings
+
 
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from .model_serializers import UserSerializer, UserMSerializer, UserdetailsSerializer, CategorySerializer, SubCategorySerializer, ProductsSerializer
 from rest_framework import viewsets
-from .CustomViewsets import ThrottledViewSet
 from rest_framework.renderers import JSONRenderer, TemplateHTMLRenderer
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication, TokenAuthentication
-from .CustomAuthentication  import TokenAuthentication as TokenAuth
 from rest_framework.authtoken.models import Token
-from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny, IsAuthenticatedOrReadOnly
+from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny, IsAuthenticatedOrReadOnly, SAFE_METHODS
 from rest_framework.parsers import FileUploadParser, MultiPartParser
 from rest_framework.throttling import UserRateThrottle
+
+
+from .model_serializers import UserSerializer, UserMSerializer, UserdetailsSerializer, CategorySerializer, SubCategorySerializer, ProductsSerializer
+from .CustomAuthentication  import TokenAuthentication as TokenAuth
 from .CustomExceptions import CustomThrottled_Exception
-from django.conf import settings
-import asyncio
-
-
+from .CustomViewsets import ThrottledViewSet
 
 class UserAuthViewSet(BaseView,viewsets.ModelViewSet):
 
@@ -61,9 +65,8 @@ class UserAuthViewSet(BaseView,viewsets.ModelViewSet):
 
 		try:
 			user = User.objects.get(Q(username=email) | Q(email=email))
-		except User.DoesNotExist as e:
-			self.send['message'] = "User not found!"
-			return Response(self.send)
+		except User.DoesNotExist:
+			return self.UserDoesNotExist()
 
 		if user :
 			check_pass = check_password(password,user.password)
@@ -73,7 +76,7 @@ class UserAuthViewSet(BaseView,viewsets.ModelViewSet):
 				token = Token.objects.get_or_create(user=user)
 				self.send['message'] = "Credentials matched"
 				self.send['instruction'] = "Use the following `token` in further requests"
-				self.send['token']   = str(token[0])
+				self.send['token'] = str(token[0])
 				self.log.info(f"Loggedin || {user}")
 			else:
 				self.send['message'] = "Password is incorrect"
@@ -107,7 +110,7 @@ class UserMViewSet(BaseView,ThrottledViewSet):
 	lookup_field      = 'pk'
 	multiple_lookup_fields  = ['email','username']
 
-	#authentication_classes = [TokenAuth]
+	authentication_classes = [TokenAuth]
 	#permission_classes = [IsAuthenticated,IsAuthenticatedOrReadOnly]
 	#renderer_classes 	    = [JSONRenderer,TemplateHTMLRenderer]
 	#throttle_classes =  [OncePerDayUserThrottle]
@@ -141,7 +144,7 @@ class UserMViewSet(BaseView,ThrottledViewSet):
 			user  = users.get(pk=pk)
 			user  = UserMSerializer(user)
 		except User.DoesNotExist:
-			return self.Send_Response(message='User Not found!',status=0)
+			return self.UserDoesNotExist()
 		else:
 			if user.data:
 				self.send['data']  = user.data
@@ -195,7 +198,7 @@ class UserMViewSet(BaseView,ThrottledViewSet):
 			users = self.get_queryset()
 			user  = users.get(pk=pk)
 		except User.DoesNotExist:
-			return self.Send_Response(message='User Not found!',status=0)
+			return self.UserDoesNotExist()
 		else:
 			status, serializer = self.Serialize_Method(UserMSerializer,request.data,instance=user,partial=True)
 			if status:
@@ -234,16 +237,16 @@ class UserMViewSet(BaseView,ThrottledViewSet):
 			self.log.info(f"{request.user} deleted {user} - {pk}!")
 			return self.Send_Response(message=f"{user} was deleted Successfully :)")
 		except User.DoesNotExist:
-			return self.Send_Response(message='User Not found!',status=0)
+			return self.UserDoesNotExist()
 
 
 	#Change user status
 	@action(detail=True, methods=['get'], url_name="useractivity")
 	def useractivity(self,request,pk=0,format='json'):
 		try:
-			user = User.objects.get(pk=pk)
+			user = self.get_object()
 		except User.DoesNotExist:
-			message = "User not found !"; status = '0'
+			return self.UserDoesNotExist()
 		else:
 			user.is_active = False if user.is_active else True
 			user.save()
@@ -252,14 +255,12 @@ class UserMViewSet(BaseView,ThrottledViewSet):
 		return self.Send_Response(message=message,status=status)
 
 
+	# def filter_queryset(self,queryset,filter_fields):
+	# 	query = Q()
 
-
-	def filter_queryset(self,queryset,filter_fields):
-		query = Q()
-
-		for field, value in filter_fields.items():
-			query |= Q(f"{field}={value}")
-		return queryset.filter(query)
+	# 	for field, value in filter_fields.items():
+	# 		query |= Q(f"{field}={value}")
+	# 	return queryset.filter(query)
 
 
 	def get_permissions(self):
@@ -278,7 +279,7 @@ class UserMViewSet(BaseView,ThrottledViewSet):
 		for field in self.multiple_lookup_fields:
 			if query_params.get(field):
 				filter_fields[field] = query_params.get(field)
-		print(filter_fields)
+		#print(filter_fields)
 		if filter_fields:
 			queryset = queryset.filter(**filter_fields)
 
@@ -630,10 +631,6 @@ class UserViewSet(viewsets.ViewSet):
 from rest_framework.decorators import api_view
 
 results = 0
-
-
-
-
 
 @api_view(['GET', 'POST'])
 def Purchase_product(request):

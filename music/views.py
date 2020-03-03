@@ -59,11 +59,10 @@ def search_movie(request):
 	if request.method=='POST':
 		movie_name = request.POST.get('movie_name').replace(' ','+')
 
-		loop = asyncio.new_event_loop()
-		asyncio.set_event_loop(loop)
-		loop = asyncio.get_event_loop()
-		loop.run_until_complete(render_movie())
-		asyncio.sleep(10)
+		task = asyncio.create_task(render_movie())
+
+		#await task
+
 		return HttpResponse(results.html.html)
 
 	return render(request,'site/search_form.html')

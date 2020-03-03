@@ -125,11 +125,11 @@ class CategorySerializer(serializers.ModelSerializer):
 	sub_categories = SubCategorySerializer(many=True, read_only=True)
 	created_at 	   = serializers.DateTimeField(format="%d, %b %Y")
 	image          = serializers.FileField(use_url=True)
-	image_url      = serializers.SerializerMethodField()
+	#image_url      = serializers.SerializerMethodField()
 
 	class Meta:
 		model  = Categories
-		fields = ['id','category_name','image','created_at','sub_categories','image','image_url']
+		fields = ['id','category_name','image','created_at','sub_categories','image']
 
 
 	def get_image_url(self, obj):
